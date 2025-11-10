@@ -1,0 +1,3125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy Trình Phát Triển Đảng - Lớp Nhận Thức</title>
+    <!-- Tải Tailwind CSS cho styling cơ bản và responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cấu hình Tailwind cho Font Inter (mặc định) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-red': '#C00000', // Màu đỏ chủ đạo
+                        'bg-light': '#f9fafb',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Link Font Awesome để dùng Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* CSS tuỳ chỉnh cho Navigation chính */
+        .nav-step {
+            transition: all 0.3s ease;
+            position: relative;
+            flex-grow: 1;
+        }
+        .nav-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -1px;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 60%;
+            background-color: rgba(220, 220, 220, 0.7);
+        }
+        .nav-step.active .step-icon {
+            color: #ffffff;
+        }
+        .nav-step.active {
+            background-color: #C00000;
+            color: #ffffff;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(192, 0, 0, 0.3);
+        }
+        .nav-step:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+
+        /* CSS cho Slide-in (Chi tiết hồ sơ) */
+        .slide-in-panel {
+            transition: transform 0.4s ease-in-out;
+            transform: translateX(100%);
+        }
+        .slide-in-panel.open {
+            transform: translateX(0);
+        }
+        /* CSS cho Modal Overlay */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        /* Input required red border (CSS validation) */
+        input:required:not(:placeholder-shown):invalid, select:required:not([value=""]):invalid {
+            border-color: #ef4444; /* red-500 */
+        }
+
+        /* Ẩn thanh cuộn dọc (chỉ cho slide-in để trông mượt mà hơn) */
+        .slide-in-panel::-webkit-scrollbar {
+            width: 0;
+        }
+        .slide-in-panel {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div class="container mx-auto p-4 sm:p-8 mt-6">
+    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        
+        <!-- Thanh Tiêu đề -->
+        <header class="mb-6 border-b pb-4">
+            <h1 class="text-3xl font-extrabold text-primary-red">Quy trình Phát triển Đảng</h1>
+            <p class="text-gray-600 mt-1">Tổng quan và quản lý toàn bộ quy trình phát triển đảng viên</p>
+        </header>
+
+        <!-- Thanh Navigation 5 Bước -->
+        <div id="processNav" class="process-navigation flex flex-wrap md:flex-nowrap bg-gray-50 rounded-lg shadow-inner overflow-hidden">
+            
+            <!-- Dữ liệu 5 Bước -->
+            <div 
+                class="nav-step p-3 sm:p-4 text-center cursor-pointer flex flex-col items-center justify-center border-b-2 border-transparent md:border-b-0 md:border-r" 
+                data-target="quan-chung" 
+                data-title="Quần Chúng Ưu Tú"
+                data-desc="Quản lý danh sách quần chúng và trạng thái từng hồ sơ"
+                data-url="quan_ly_quan_chung_uu_tu.html"
+            >
+                <i class="fas fa-users step-icon text-gray-500 text-2xl mb-1"></i>
+                <span class="text-sm font-semibold whitespace-nowrap">Quần Chúng Ưu Tú</span>
+            </div>
+
+            <div 
+                class="nav-step p-3 sm:p-4 text-center cursor-pointer flex flex-col items-center justify-center border-b-2 border-transparent md:border-b-0 md:border-r" 
+                data-target="lop-nhan-thuc" 
+                data-title="Lớp Nhận Thức"
+                data-desc="Quản lý danh sách lớp học và gán hồ sơ vào lớp"
+                data-url="quan_ly_lop_nhan_thuc.html"
+            >
+                <i class="fas fa-book-open step-icon text-gray-500 text-2xl mb-1"></i>
+                <span class="text-sm font-semibold whitespace-nowrap">Lớp Nhận Thức</span>
+            </div>
+
+            <div 
+                class="nav-step p-3 sm:p-4 text-center cursor-pointer flex flex-col items-center justify-center border-b-2 border-transparent md:border-b-0 md:border-r" 
+                data-target="ren-luyen" 
+                data-title="Rèn Luyện Thử Thách"
+                data-desc="Quản lý người hướng dẫn và hồ sơ trong thử thách"
+                data-url="quan_ly_ren_luyen_thu_thach.html"
+            >
+                <i class="fas fa-user-tie step-icon text-gray-500 text-2xl mb-1"></i>
+                <span class="text-sm font-semibold whitespace-nowrap">Rèn Luyện Thử Thách</span>
+            </div>
+
+            <div 
+                class="nav-step p-3 sm:p-4 text-center cursor-pointer flex flex-col items-center justify-center border-b-2 border-transparent md:border-b-0 md:border-r" 
+                data-target="hoan-thien" 
+                data-title="Hoàn Thiện Hồ Sơ"
+                data-desc="Quản lý checklist hồ sơ từng đối tượng"
+                data-url="quan_ly_hoan_thien_ho_so.html"
+            >
+                <i class="fas fa-file-alt step-icon text-gray-500 text-2xl mb-1"></i>
+                <span class="text-sm font-semibold whitespace-nowrap">Hoàn Thiện Hồ Sơ</span>
+            </div>
+
+            <div 
+                class="nav-step p-3 sm:p-4 text-center cursor-pointer flex flex-col items-center justify-center border-b-2 border-transparent md:border-b-0" 
+                data-target="ket-nap" 
+                data-title="Quyết Định Kết Nạp"
+                data-desc="Quản lý các quyết định kết nạp"
+                data-url="quan_ly_quyet_dinh_ket_nap.html"
+            >
+                <i class="fas fa-check-circle step-icon text-gray-500 text-2xl mb-1"></i>
+                <span class="text-sm font-semibold whitespace-nowrap">Quyết Định Kết Nạp</span>
+            </div>
+        </div>
+        
+        <!-- Vùng Nội dung chính (Sẽ được fill bởi JS) -->
+        <div id="mainContent" class="content mt-6">
+             <!-- Nội dung Quần lý Quy trình sẽ được render ở đây -->
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal 1: Lựa chọn phương thức Thêm mới QCUT -->
+<div id="modalAddNewOption" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay">
+    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalAddNewOptionInner">
+        <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Thêm mới Hồ sơ</h3>
+        <p class="text-gray-600 mb-6">Vui lòng chọn nguồn dữ liệu cho hồ sơ mới:</p>
+        
+        <div class="space-y-4">
+            <button id="btnSelectHSNV" onclick="openSelectHSNVModal()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md">
+                <i class="fas fa-user-plus mr-2"></i> Chọn từ Hồ sơ Nhân viên
+            </button>
+            <button id="btnManualEntry" onclick="openManualEntry()" class="w-full bg-primary-red text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-150 shadow-md">
+                <i class="fas fa-keyboard mr-2"></i> Nhập tay
+            </button>
+        </div>
+        <button onclick="closeModal('modalAddNewOption')" class="mt-6 w-full text-gray-600 py-2 border rounded-lg hover:bg-gray-50 transition duration-150">Hủy</button>
+    </div>
+</div>
+
+<!-- Modal 1.5: Chọn từ Hồ sơ Nhân viên -->
+<div id="modalSelectHSNV" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-5xl mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalSelectHSNVInner">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="text-2xl font-bold text-gray-800">Chọn từ Hồ sơ Nhân viên</h3>
+            <button onclick="closeModal('modalSelectHSNV')" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- Bộ lọc -->
+            <div class="bg-gray-50 p-4 rounded-lg border mb-4">
+                <h4 class="font-semibold text-gray-700 mb-3">Tìm kiếm và lọc</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="filterHSNVName" placeholder="Tìm theo tên..." class="px-3 py-2 border rounded-lg" onkeyup="filterHSNVList()">
+                    <input type="text" id="filterHSNVCode" placeholder="Tìm theo mã NV..." class="px-3 py-2 border rounded-lg" onkeyup="filterHSNVList()">
+                    <select id="filterHSNVUnit" class="px-3 py-2 border rounded-lg" onchange="filterHSNVList()">
+                        <option value="">-- Tất cả đơn vị --</option>
+                        <option value="Phòng Kế toán">Phòng Kế toán</option>
+                        <option value="Ban Lãnh đạo">Ban Lãnh đạo</option>
+                        <option value="Phòng Hành chính">Phòng Hành chính</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Danh sách HSNV -->
+            <div id="hsnvListContainer" class="overflow-x-auto bg-white rounded-lg shadow border max-h-96 overflow-y-auto">
+                <!-- Table sẽ được render bằng JS -->
+            </div>
+        </div>
+
+        <div class="p-6 pt-4 border-t flex justify-end">
+            <button onclick="closeModal('modalSelectHSNV')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Form Nhập/Sửa Hồ sơ QCUT (Đầy đủ 44 trường) -->
+<div id="modalDataEntry" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-6xl mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalDataEntryInner">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="text-2xl font-bold text-gray-800">Thông tin Quần Chúng Ưu Tú</h3>
+            <button onclick="closeModal('modalDataEntry')" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <form id="qcForm" class="p-6">
+            <input type="hidden" id="qcRecordId" value="">
+            <input type="hidden" id="fromHSNV" value="false">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                
+                <!-- I. THÔNG TIN CƠ BẢN -->
+                <div class="md:col-span-2 text-primary-red font-bold text-lg mb-2 pt-4 border-t-2 border-primary-red">I. THÔNG TIN CƠ BẢN</div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        1. Họ và tên <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="hoTen" name="hoTen" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        2. Mã nhân viên
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="maNV" name="maNV" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        3. Đơn vị / Chi bộ trực thuộc <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="donVi" name="donVi" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required onchange="updateChiBoCha()">
+                        <option value="">-- Chọn Đơn vị/Chi bộ --</option>
+                        <option value="Chi bộ Phòng Kế toán">Chi bộ Phòng Kế toán</option>
+                        <option value="Chi bộ Ban Lãnh đạo">Chi bộ Ban Lãnh đạo</option>
+                        <option value="Chi bộ Phòng Hành chính">Chi bộ Phòng Hành chính</option>
+                        <option value="Chi bộ Phòng Kinh doanh">Chi bộ Phòng Kinh doanh</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        4. Tên CSĐ trực thuộc (Đảng bộ/Chi bộ cha)
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="chiBoCha" name="chiBoCha" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm p-2 border" value="Đảng ủy Khối Cơ quan" readonly>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        5. Chức danh (chức vụ trong cơ quan) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="chucDanh" name="chucDanh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        8. Chức danh chính quyền
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="chucDanhChinhQuyen" name="chucDanhChinhQuyen" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        9. Chức danh đoàn thể
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="chucDanhDoanThe" name="chucDanhDoanThe" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="VD: Bí thư Đoàn">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        12. Giới tính <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="gioiTinh" name="gioiTinh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn --</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        13. Ngày sinh <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="date" id="ngaySinh" name="ngaySinh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        15. Số CMND/CCCD <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="cccd" name="cccd" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        16. Dân tộc
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="danToc" name="danToc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        <option value="">-- Chọn --</option>
+                        <option value="Kinh">Kinh</option>
+                        <option value="Tày">Tày</option>
+                        <option value="Thái">Thái</option>
+                        <option value="Mường">Mường</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        17. Tôn giáo
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="tonGiao" name="tonGiao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        <option value="">-- Chọn --</option>
+                        <option value="Không">Không</option>
+                        <option value="Phật giáo">Phật giáo</option>
+                        <option value="Công giáo">Công giáo</option>
+                        <option value="Tin lành">Tin lành</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        18. Ngày tiếp nhận <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="date" id="ngayTiepNhan" name="ngayTiepNhan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <!-- II. THÔNG TIN ĐỊA CHỈ -->
+                <div class="md:col-span-2 text-primary-red font-bold text-lg mb-2 pt-4 border-t-2 border-primary-red">II. THÔNG TIN ĐỊA CHỈ</div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        19. Nơi sinh (Tỉnh/TP) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="noiSinhTP" name="noiSinhTP" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Tỉnh/TP --</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                        <option value="Đà Nẵng">Đà Nẵng</option>
+                        <option value="Hải Phòng">Hải Phòng</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        20. Nơi sinh (Phường/Xã) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="noiSinhPhuong" name="noiSinhPhuong" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Phường/Xã --</option>
+                        <option value="Phường Đống Đa">Phường Đống Đa</option>
+                        <option value="Phường Láng Hạ">Phường Láng Hạ</option>
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        21. Địa chỉ nơi sinh
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="diaChiNoiSinh" name="diaChiNoiSinh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        22. Quê quán (Tỉnh/TP) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="queQuanTP" name="queQuanTP" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Tỉnh/TP --</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        23. Quê quán (Phường/Xã) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="queQuanPhuong" name="queQuanPhuong" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Phường/Xã --</option>
+                        <option value="Xã Đông Anh">Xã Đông Anh</option>
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        24. Địa chỉ quê quán
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="diaChiQueQuan" name="diaChiQueQuan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">25. Nơi ở hiện nay (Tỉnh/TP)</label>
+                    <select id="noiOHienNayTP" name="noiOHienNayTP" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        <option value="">-- Chọn Tỉnh/TP --</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">26. Nơi ở hiện nay (Phường/Xã)</label>
+                    <select id="noiOHienNayPhuong" name="noiOHienNayPhuong" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">27. Địa chỉ nơi ở hiện nay</label>
+                    <input type="text" id="diaChiNoiOHienNay" name="diaChiNoiOHienNay" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Số nhà, đường, tổ, khu phố">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        28. Tỉnh/TP thường trú <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <select id="thuongTruTP" name="thuongTruTP" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Tỉnh/TP --</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        29. Địa chỉ thường trú <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="diaChiThuongTru" name="diaChiThuongTru" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required placeholder="Số nhà, đường, tổ, khu phố">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">30. Thành phần gia đình</label>
+                    <input type="text" id="thanhPhanGiaDinh" name="thanhPhanGiaDinh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <!-- III. THÔNG TIN CÔNG TÁC -->
+                <div class="md:col-span-2 text-primary-red font-bold text-lg mb-2 pt-4 border-t-2 border-primary-red">III. THÔNG TIN CÔNG TÁC</div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        31. Nghề nghiệp trước khi tuyển dụng
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="ngheNghiepTruocTuyenDung" name="ngheNghiepTruocTuyenDung" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        32. Ngày được tuyển dụng
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="date" id="ngayTuyenDung" name="ngayTuyenDung" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">33. Đơn vị tuyển dụng</label>
+                    <input type="text" id="donViTuyenDung" name="donViTuyenDung" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        34. Ngày vào cơ quan hiện đang công tác
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="date" id="ngayVaoCoQuan" name="ngayVaoCoQuan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        35. Bộ phận công tác (Phòng/Đơn vị) <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="boPhanCongTac" name="boPhanCongTac" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        36. Công tác chính đang làm <span class="text-primary-red">*</span>
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="congTacChinhDangLam" name="congTacChinhDangLam" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        37. Ngạch công chức
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="ngachCongChuc" name="ngachCongChuc" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        38. Bậc lương
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="bacLuong" name="bacLuong" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        39. Hệ số
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="heSo" name="heSo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        40. Từ tháng (MM/yyyy)
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="month" id="tuThang" name="tuThang" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        41. Sở trường công tác
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="soTruongCongTac" name="soTruongCongTac" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        42. Công việc đã làm lâu nhất
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="congViecLauNhat" name="congViecLauNhat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        43. Điện thoại
+                        <span class="text-xs text-blue-600 ml-1">📋 HSNV</span>
+                    </label>
+                    <input type="text" id="dienThoai" name="dienThoai" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">44. Danh hiệu được phong tặng cao nhất</label>
+                    <input type="text" id="danhHieu" name="danhHieu" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                </div>
+
+            </div>
+
+            <div class="mt-8 pt-4 border-t flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('modalDataEntry')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">Lưu Hồ sơ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 3: Tạo mới Lớp Nhận Thức -->
+<div id="modalCreateClass" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay">
+    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalCreateClassInner">
+        <h3 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4">Tạo mới Lớp Nhận Thức</h3>
+        
+        <form id="classForm" onsubmit="handleClassSubmit(event)">
+            <div class="space-y-4">
+                <!-- Tên lớp -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">1. Tên lớp <span class="text-primary-red">*</span></label>
+                    <input type="text" id="className" name="className" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                <!-- Năm tổ chức -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">2. Năm tổ chức <span class="text-primary-red">*</span></label>
+                    <select id="classYear" name="classYear" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                        <option value="">-- Chọn Năm --</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                </div>
+                <!-- Ngày bắt đầu -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">3. Ngày bắt đầu <span class="text-primary-red">*</span></label>
+                    <input type="date" id="classStart" name="classStart" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                <!-- Ngày kết thúc -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">4. Ngày kết thúc <span class="text-primary-red">*</span></label>
+                    <input type="date" id="classEnd" name="classEnd" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" required>
+                </div>
+                 <!-- Ghi chú -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">5. Ghi chú</label>
+                    <textarea id="classNote" name="classNote" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('modalCreateClass')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">Lưu Lớp</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 4: Chi tiết Lớp Nhận Thức & Quản lý Học viên -->
+<div id="modalClassDetail" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-6xl mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalClassDetailInner">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="text-2xl font-bold text-gray-800">Chi tiết Lớp: <span id="detailClassName" class="text-primary-red"></span></h3>
+            <button onclick="closeModal('modalClassDetail')" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- (A) Thông tin lớp -->
+            <div class="bg-gray-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="font-medium text-gray-700"><i class="fas fa-calendar-alt mr-2"></i>Năm tổ chức: <span id="detailClassYear" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-clock mr-2"></i>Ngày BĐ - KT: <span id="detailClassDates" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-users mr-2"></i>Sĩ số: <span id="detailClassSize" class="font-bold text-primary-red"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-check-double mr-2"></i>Hoàn thành: <span id="detailClassCompleted" class="font-bold text-green-600"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-info-circle mr-2"></i>Trạng thái: <span id="detailClassStatus" class="font-bold"></span></div>
+                <div class="font-medium text-gray-700 md:col-span-3"><i class="fas fa-pencil-alt mr-2"></i>Ghi chú: <span id="detailClassNote" class="font-normal text-gray-600"></span></div>
+            </div>
+
+            <!-- (B) Danh sách học viên -->
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-xl font-semibold text-gray-800">Danh sách Học viên (<span id="currentClassSize">0</span>)</h4>
+                <div>
+                    <button onclick="openAddStudentModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md mr-3">
+                        <i class="fas fa-user-plus mr-2"></i> Thêm Học viên
+                    </button>
+                    <!-- FIX: Định nghĩa hàm openClassStatusUpdateModal() -->
+                    <button onclick="openClassStatusUpdateModal()" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i> Cập nhật Lớp
+                    </button>
+                </div>
+            </div>
+            
+            <div id="classStudentList" class="overflow-x-auto bg-white rounded-lg shadow border">
+                <!-- Danh sách học viên sẽ được render tại đây -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 5: Thêm Học viên vào Lớp (Dùng cho Lớp Nhận thức) -->
+<div id="modalAddStudent" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-2xl mx-auto p-6 transform transition-all duration-300 scale-95 opacity-0" id="modalAddStudentInner">
+        <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">Thêm Học viên mới (Từ Quần Chúng Ưu Tú)</h3>
+        <p class="text-sm text-gray-600 mb-4">Chỉ hiển thị hồ sơ **Quần Chúng Ưu Tú** đã chuyển lên bước Cảm tình/Chưa gán lớp.</p>
+        
+        <div id="availableStudentsList" class="space-y-3 h-80 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+            <!-- Danh sách học viên khả dụng được render bằng JS -->
+        </div>
+
+        <div class="mt-6 pt-4 border-t flex justify-end space-x-3">
+            <button type="button" onclick="closeModal('modalAddStudent')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+            <button type="button" onclick="addSelectedStudents()" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">Thêm (<span id="selectedCount">0</span>) Hồ sơ</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal 6: Thêm Người Hướng Dẫn (Dùng cho Rèn luyện thử thách) -->
+<div id="modalAddMentor" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-2xl mx-auto p-6 transform transition-all duration-300 scale-95 opacity-0" id="modalAddMentorInner">
+        <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">Thêm Người Hướng Dẫn mới</h3>
+        <p class="text-sm text-gray-600 mb-4">Vui lòng chọn Đồng chí Đảng viên sẽ tham gia hướng dẫn rèn luyện.</p>
+        
+        <div id="availableMentorList" class="space-y-3 h-80 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+            <!-- Danh sách Đảng viên khả dụng được render bằng JS -->
+        </div>
+
+        <div class="mt-6 pt-4 border-t flex justify-end space-x-3">
+            <button type="button" onclick="closeModal('modalAddMentor')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+            <button type="button" onclick="addSelectedMentors()" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">Thêm (<span id="selectedMentorCount">0</span>) Đồng chí</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 7: Chi tiết Người Hướng Dẫn & Quản lý Học viên rèn luyện -->
+<div id="modalMentorDetail" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-6xl mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalMentorDetailInner">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="text-2xl font-bold text-gray-800">Chi tiết Người Hướng Dẫn: <span id="detailMentorName" class="text-primary-red"></span></h3>
+            <button onclick="closeModal('modalMentorDetail')" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- (A) Thông tin Người Hướng Dẫn -->
+            <div class="bg-gray-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="font-medium text-gray-700"><i class="fas fa-id-card mr-2"></i>Mã Đảng viên: <span id="detailMentorCode" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-user-tag mr-2"></i>Chức danh: <span id="detailMentorTitle" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-users-cog mr-2"></i>Bộ phận: <span id="detailMentorDept" class="font-bold text-primary-red"></span></div>
+                <div class="font-medium text-gray-700 md:col-span-3"><i class="fas fa-hashtag mr-2"></i>Số hồ sơ đang hướng dẫn: <span id="detailMentorStudentCount" class="font-bold text-green-600"></span></div>
+            </div>
+
+            <!-- (B) Danh sách Hồ sơ đang rèn luyện -->
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-xl font-semibold text-gray-800">Danh sách Hồ sơ đang Hướng dẫn (<span id="currentMentorStudentCount">0</span>)</h4>
+                <div>
+                    <button onclick="openAssignStudentModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md mr-3">
+                        <i class="fas fa-user-plus mr-2"></i> Gán Hồ sơ
+                    </button>
+                    <button onclick="alert('Chức năng Cập nhật trạng thái hàng loạt đang được triển khai.')" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i> Cập nhật Trạng thái
+                    </button>
+                </div>
+            </div>
+            
+            <div id="mentorStudentList" class="overflow-x-auto bg-white rounded-lg shadow border">
+                <!-- Danh sách học viên sẽ được render tại đây -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 8: Gán Hồ sơ vào Người Hướng Dẫn -->
+<div id="modalAssignStudents" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-2xl mx-auto p-6 transform transition-all duration-300 scale-95 opacity-0" id="modalAssignStudentsInner">
+        <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">Chọn Hồ sơ gán cho Người Hướng Dẫn</h3>
+        <p class="text-sm text-gray-600 mb-4">Chỉ hiển thị hồ sơ đã **Hoàn thành Lớp Nhận thức** và **Chưa có Người Hướng Dẫn**.</p>
+        
+        <div id="assignableStudentsList" class="space-y-3 h-80 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+            <!-- Danh sách học viên khả dụng được render bằng JS -->
+        </div>
+
+        <div class="mt-6 pt-4 border-t flex justify-end space-x-3">
+            <button type="button" onclick="closeModal('modalAssignStudents')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+            <button type="button" onclick="assignSelectedStudentsToMentor()" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">Gán (<span id="assignSelectedCount">0</span>) Hồ sơ</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 9: Chi tiết Tài liệu của 1 Hồ sơ (Hoàn thiện hồ sơ) -->
+<div id="modalDocumentDetail" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-3xl mx-auto transform transition-all duration-300 scale-95 opacity-0" id="modalDocumentDetailInner">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <h3 class="text-2xl font-bold text-gray-800">Chi tiết Tài liệu: <span id="docDetailName" class="text-primary-red"></span></h3>
+            <button onclick="closeModal('modalDocumentDetail')" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- Thông tin cơ bản -->
+            <div class="bg-gray-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div class="font-medium text-gray-700"><i class="fas fa-user mr-2"></i>Chức danh: <span id="docDetailTitle" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-building mr-2"></i>Đơn vị: <span id="docDetailUnit" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-user-tie mr-2"></i>Người hướng dẫn: <span id="docDetailMentor" class="font-bold text-gray-900"></span></div>
+                <div class="font-medium text-gray-700"><i class="fas fa-chart-pie mr-2"></i>Tiến độ: <span id="docDetailProgress" class="font-bold text-primary-red"></span></div>
+            </div>
+
+            <!-- Checklist 6 tài liệu -->
+            <h4 class="text-lg font-semibold text-gray-800 mb-4">Checklist Tài liệu cần nộp</h4>
+            <div id="documentChecklistTable" class="overflow-x-auto bg-white rounded-lg shadow border">
+                <!-- Table sẽ được render bằng JS -->
+            </div>
+        </div>
+
+        <div class="p-6 pt-4 border-t flex justify-end">
+            <button onclick="closeModal('modalDocumentDetail')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 10: Cập nhật Hàng loạt Tài liệu -->
+<div id="modalBulkUpdate" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-3xl mx-auto p-6 transform transition-all duration-300 scale-95 opacity-0" id="modalBulkUpdateInner">
+        <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">Cập nhật Hàng loạt Tài liệu</h3>
+        
+        <form id="bulkUpdateForm" onsubmit="handleBulkUpdate(event)">
+            <!-- 1. Chọn hồ sơ -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-3">1. Chọn hồ sơ cần cập nhật:</h4>
+                <div id="bulkProfileList" class="space-y-2 max-h-60 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+                    <!-- Danh sách checkbox hồ sơ được render bằng JS -->
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Đã chọn: <span id="bulkSelectedProfileCount" class="font-bold text-primary-red">0</span> hồ sơ</p>
+            </div>
+
+            <!-- 2. Chọn loại tài liệu -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-3">2. Chọn loại tài liệu muốn cập nhật:</h4>
+                <div id="bulkDocumentList" class="space-y-2 border p-3 rounded-lg bg-gray-50">
+                    <!-- Danh sách checkbox 6 tài liệu được render bằng JS -->
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Đã chọn: <span id="bulkSelectedDocCount" class="font-bold text-primary-red">0</span> loại tài liệu</p>
+            </div>
+
+            <!-- 3. Chọn trạng thái áp dụng -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-3">3. Trạng thái muốn áp dụng:</h4>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="bulkStatus" value="true" class="form-radio text-primary-red h-4 w-4 mr-2" required>
+                        <span class="text-sm text-gray-700">Đánh dấu tất cả là <strong class="text-green-600">Đã nộp</strong></span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="bulkStatus" value="false" class="form-radio text-primary-red h-4 w-4 mr-2">
+                        <span class="text-sm text-gray-700">Đánh dấu tất cả là <strong class="text-red-600">Chưa nộp</strong></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('modalBulkUpdate')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">
+                    <i class="fas fa-save mr-2"></i>Lưu Cập nhật
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal 11: Cập nhật Hàng loạt Trạng thái Kết nạp -->
+<div id="modalBulkAdmission" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl my-10 w-full max-w-3xl mx-auto p-6 transform transition-all duration-300 scale-95 opacity-0" id="modalBulkAdmissionInner">
+        <h3 class="text-xl font-bold text-gray-800 border-b pb-3 mb-4">Cập nhật Hàng loạt Trạng thái Kết nạp</h3>
+        
+        <form id="bulkAdmissionForm" onsubmit="handleBulkAdmission(event)">
+            <!-- 1. Chọn hồ sơ -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-3">1. Chọn hồ sơ cần cập nhật:</h4>
+                <div id="bulkAdmissionProfileList" class="space-y-2 max-h-80 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+                    <!-- Danh sách checkbox hồ sơ được render bằng JS -->
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Đã chọn: <span id="bulkAdmissionSelectedCount" class="font-bold text-primary-red">0</span> hồ sơ</p>
+            </div>
+
+            <!-- 2. Chọn trạng thái kết nạp -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-700 mb-3">2. Trạng thái kết nạp muốn áp dụng:</h4>
+                <div class="space-y-2">
+                    <label class="flex items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200 hover:bg-yellow-100 cursor-pointer">
+                        <input type="radio" name="bulkAdmissionStatus" value="Đang thực hiện" class="form-radio text-primary-red h-4 w-4 mr-3" required>
+                        <div>
+                            <span class="text-sm font-semibold text-gray-700">Đang thực hiện</span>
+                            <p class="text-xs text-gray-500">Hồ sơ đang trong quá trình xử lý kết nạp</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 cursor-pointer">
+                        <input type="radio" name="bulkAdmissionStatus" value="Không hoàn thành" class="form-radio text-primary-red h-4 w-4 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-gray-700">Không hoàn thành</span>
+                            <p class="text-xs text-gray-500">Hồ sơ không đạt yêu cầu kết nạp</p>
+                        </div>
+                    </label>
+                    <label class="flex items-center p-3 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 cursor-pointer">
+                        <input type="radio" name="bulkAdmissionStatus" value="Hoàn thành" class="form-radio text-primary-red h-4 w-4 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-green-700">Hoàn thành</span>
+                            <p class="text-xs text-green-600 font-medium">⚠️ Hồ sơ sẽ tự động chuyển sang phân hệ Đảng viên với chức danh "Đảng viên dự bị"</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('modalBulkAdmission')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold transition duration-150">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-primary-red text-white rounded-lg hover:bg-red-700 font-semibold transition duration-150 shadow-md">
+                    <i class="fas fa-save mr-2"></i>Lưu Cập nhật
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Slide-in Panel: Xem chi tiết Hồ sơ QCUT (Đã có từ trước) -->
+<div id="slideInDetailView" class="fixed top-0 right-0 h-full w-full md:w-1/3 bg-white z-50 shadow-2xl overflow-y-auto slide-in-panel">
+    <div class="p-6 sticky top-0 bg-white border-b flex justify-between items-center z-10">
+        <h3 class="text-xl font-bold text-gray-800">Chi tiết Hồ sơ: <span id="detailName" class="text-primary-red"></span></h3>
+        <button onclick="closeSlideIn()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+    </div>
+    
+    <!-- Tab Navigation trong Slide-in -->
+    <div class="flex border-b text-sm font-medium text-gray-500">
+        <button id="tabThongTin" class="p-3 border-b-2 border-primary-red text-primary-red tab-button flex-1" data-tab="thong-tin">
+            <i class="fas fa-info-circle mr-1"></i> 1. Thông tin Cá nhân
+        </button>
+        <button id="tabTienDo" class="p-3 border-b-2 border-transparent hover:border-gray-300 tab-button flex-1" data-tab="tien-do">
+            <i class="fas fa-chart-line mr-1"></i> 2. Tiến độ 5 bước
+        </button>
+    </div>
+
+    <!-- Nội dung Tab 1: Thông tin Cá nhân (Read-only) -->
+    <div id="contentThongTin" class="p-6 space-y-4">
+        <h4 class="font-semibold text-lg text-gray-700 border-b pb-2">Thông tin Cơ bản</h4>
+        <div id="detailInfoContent" class="grid grid-cols-2 gap-4 text-sm">
+            <!-- Nội dung chi tiết được render bằng JS -->
+        </div>
+    </div>
+
+    <!-- Nội dung Tab 2: Tiến độ 5 bước (Timeline) -->
+    <div id="contentTienDo" class="p-6 hidden">
+        <h4 class="font-semibold text-lg text-gray-700 mb-4">Tiến độ Phát triển</h4>
+        <div id="progressTimeline" class="space-y-6">
+            <!-- Dữ liệu Timeline được render bằng JS -->
+        </div>
+    </div>
+</div>
+
+
+<!-- --- JAVASCRIPT LOGIC --- -->
+<script>
+    // Constants for Step Names
+    const STEPS = {
+        QUAN_CHUNG: "Quần chúng ưu tú",
+        CAM_TINH: "Cảm tình Đảng",
+        LOP_NHAN_THUC: "Lớp Nhận thức",
+        REN_LUYEN: "Rèn luyện thử thách",
+        HOAN_THIEN: "Hoàn thiện Hồ sơ", // Thêm bước mới
+        KET_NAP: "Kết nạp Đảng",
+        CHINH_THUC: "Đảng viên chính thức"
+    };
+
+    // Danh sách 6 loại tài liệu bắt buộc
+    const REQUIRED_DOCUMENTS = [
+        { id: 1, name: "Giấy chứng nhận học lớp bồi dưỡng nhận thức về Đảng" },
+        { id: 2, name: "Đơn xin vào Đảng" },
+        { id: 3, name: "Lý lịch của người xin vào Đảng và các văn bản thẩm tra kèm theo" },
+        { id: 4, name: "Giấy giới thiệu của đảng viên chính thức được phân công giúp đỡ" },
+        { id: 5, name: "Nghị quyết giới thiệu đoàn viên ưu tú vào Đảng của Đoàn Thanh niên Cộng sản Hồ Chí Minh hoặc của công đoàn cơ sở" },
+        { id: 6, name: "Tổng hợp ý kiến nhận xét của đoàn thể chính trị - xã hội nơi người vào Đảng sinh hoạt và chi ủy (hoặc chi bộ) nơi cư trú đối với người vào Đảng" }
+    ];
+
+    // Mock Data Store
+    let mockData = [
+        { id: 1, hoTen: "Nguyễn Văn A", maNV: "NV001", gioiTinh: "Nam", donVi: "Chi bộ Phòng Kế toán", chucDanh: "Chuyên viên", ngayTiepNhan: "2024-05-15", ngaySinh: "1990-01-01", cccd: "001190000123", diaChiThuongTru: "123 Giải Phóng", trangThai: STEPS.HOAN_THIEN, currentStepIndex: 4, classId: 102, classEntryDate: "01/03/2023", classStatus: "Hoàn thành", mentorId: 201, trainingStatus: "Hoàn thành", trainingStartDate: "2024-09-01", 
+            documents: { 1: true, 2: true, 3: false, 4: true, 5: false, 6: true }, // Trạng thái 6 tài liệu
+            progress: [
+            { step: STEPS.QUAN_CHUNG, status: "Hoàn thành", start: "15/05/2024", end: "10/06/2024", note: "Hoàn thành giai đoạn quan sát." },
+            { step: STEPS.CAM_TINH, status: "Hoàn thành", start: "11/06/2024", end: "20/08/2024", note: "Chính thức trở thành cảm tình Đảng." },
+            { step: STEPS.LOP_NHAN_THUC, status: "Hoàn thành", start: "01/03/2023", end: "01/04/2023", note: "Hoàn thành Lớp Nhận thức 2023-K1" },
+            { step: STEPS.REN_LUYEN, status: "Hoàn thành", start: "01/09/2024", end: "15/10/2024", note: "Hoàn thành rèn luyện với Đ/c X." },
+            { step: STEPS.HOAN_THIEN, status: "Đang thực hiện", start: "16/10/2024", end: "N/A", note: "Đang hoàn thiện hồ sơ (4/6 tài liệu)" },
+            { step: STEPS.KET_NAP, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+            { step: STEPS.CHINH_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+        ]},
+        { id: 2, hoTen: "Lê Thị B", maNV: "NV002", gioiTinh: "Nữ", donVi: "Chi bộ Ban Lãnh đạo", chucDanh: "Phó Giám đốc", ngayTiepNhan: "2024-06-01", ngaySinh: "1995-10-12", cccd: "002195000456", diaChiThuongTru: "456 Bà Triệu", trangThai: STEPS.KET_NAP, currentStepIndex: 5, classId: 101, classEntryDate: "05/09/2024", classStatus: "Hoàn thành", mentorId: 202, trainingStatus: "Hoàn thành", trainingStartDate: "2024-10-06",
+            documents: { 1: true, 2: true, 3: true, 4: true, 5: true, 6: true }, // Đủ 6/6 tài liệu
+            ketNapStatus: "Đang thực hiện", // Trạng thái kết nạp
+            ketNapCompletedDate: null, // Ngày hoàn thành bước Hoàn thiện hồ sơ
+            progress: [
+            { step: STEPS.QUAN_CHUNG, status: "Hoàn thành", start: "01/06/2024", end: "01/09/2024", note: "" },
+            { step: STEPS.CAM_TINH, status: "Hoàn thành", start: "02/09/2024", end: "04/09/2024", note: "" },
+            { step: STEPS.LOP_NHAN_THUC, status: "Hoàn thành", start: "05/09/2024", end: "05/10/2024", note: "Tham gia Lớp Nhận thức 2024-K2" },
+            { step: STEPS.REN_LUYEN, status: "Hoàn thành", start: "06/10/2024", end: "01/11/2024", note: "Hoàn thành rèn luyện" },
+            { step: STEPS.HOAN_THIEN, status: "Hoàn thành", start: "02/11/2024", end: "09/11/2024", note: "Đã nộp đủ 6/6 tài liệu" },
+            { step: STEPS.KET_NAP, status: "Đang thực hiện", start: "10/11/2024", end: "N/A", note: "Đã chuyển sang Quyết định kết nạp" },
+            { step: STEPS.CHINH_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+            { step: STEPS.CHINH_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+        ]},
+        { id: 3, hoTen: "Trần Văn C", maNV: "NV003", gioiTinh: "Nam", donVi: "Chi bộ Phòng Kế toán", chucDanh: "Kế toán viên", ngayTiepNhan: "2024-07-01", ngaySinh: "1992-03-20", cccd: "003192000789", diaChiThuongTru: "789 Nguyễn Chí Thanh", trangThai: STEPS.REN_LUYEN, currentStepIndex: 3, classId: 101, classEntryDate: "05/09/2024", classStatus: "Hoàn thành", mentorId: 202, trainingStatus: "Đang rèn luyện", trainingStartDate: "2024-10-06",
+            documents: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false }, // Chưa có tài liệu nào
+            progress: [
+            { step: STEPS.QUAN_CHUNG, status: "Hoàn thành", start: "01/07/2024", end: "01/09/2024", note: "Hoàn thành giai đoạn quan sát." },
+            { step: STEPS.CAM_TINH, status: "Hoàn thành", start: "02/09/2024", end: "04/09/2024", note: "Chính thức trở thành cảm tình Đảng." },
+            { step: STEPS.LOP_NHAN_THUC, status: "Hoàn thành", start: "05/09/2024", end: "05/10/2024", note: "Tham gia Lớp Nhận thức 2024-K2" },
+            { step: STEPS.REN_LUYEN, status: "Đang thực hiện", start: "06/10/2024", end: "N/A", note: "Đang rèn luyện với Đ/c Y" },
+            { step: STEPS.HOAN_THIEN, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+            { step: STEPS.KET_NAP, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+            { step: STEPS.CHINH_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+        ]},
+    ];
+    
+    let mockClasses = [
+        { id: 101, name: "Lớp Nhận thức 2024-K2", year: 2024, start: "2024-09-05", end: "2024-10-05", status: "Hoàn thành", note: "Lớp online.", students: [2, 3] }, // Updated: Finished
+        { id: 102, name: "Lớp Nhận thức 2023-K1", year: 2023, start: "2023-03-01", end: "2023-04-01", status: "Hoàn thành", note: "Hoàn thành 100%." , students: [1] }, // Updated: Finished
+    ];
+    let currentClassId = null; // Biến lưu Class ID đang mở
+
+    let mockMentors = [
+        // isAssigned: true nghĩa là đã được thêm vào danh sách quản lý Người hướng dẫn
+        { id: 201, hoTen: "Đồng chí X", maDV: "DV001", chucDanh: "Bí thư Chi bộ", boPhan: "Chi bộ Phòng Kế toán", isAssigned: true },
+        { id: 202, hoTen: "Đồng chí Y", maDV: "DV002", chucDanh: "Phó Bí thư", boPhan: "Chi bộ Ban Lãnh đạo", isAssigned: true },
+        { id: 203, hoTen: "Đồng chí Z", maDV: "DV003", chucDanh: "Đảng viên", boPhan: "Chi bộ Phòng Kế toán", isAssigned: false },
+    ];
+    let currentMentorId = null; // Biến lưu Mentor ID đang mở
+    let currentDocProfileId = null; // Biến lưu Profile ID đang xem chi tiết tài liệu
+    
+    // Mock Data: Hồ sơ Đảng viên (Phân hệ mới)
+    let mockPartyMembers = [
+        // Hồ sơ đảng viên sẽ được tạo tự động khi hoàn thành Quyết định kết nạp
+    ];
+    
+    // Mock Data: Hồ sơ Nhân viên (HSNV)
+    let mockEmployees = [
+        { id: 1, hoTen: "Phạm Văn D", maNV: "NV004", gioiTinh: "Nam", ngaySinh: "1988-05-15", cccd: "004188001234", donVi: "Phòng Kế toán", chucDanh: "Kế toán trưởng", boPhanCongTac: "Phòng Kế toán", congTacChinhDangLam: "Quản lý tài chính", diaChiThuongTru: "100 Trần Hưng Đạo, Hà Nội", dienThoai: "0912345678", danToc: "Kinh", tonGiao: "Không", noiSinhTP: "Hà Nội", noiSinhPhuong: "Phường Đống Đa", queQuanTP: "Hà Nội", queQuanPhuong: "Xã Đông Anh", thuongTruTP: "Hà Nội", ngayTiepNhan: "2024-01-15" },
+        { id: 2, hoTen: "Nguyễn Thị E", maNV: "NV005", gioiTinh: "Nữ", ngaySinh: "1992-08-20", cccd: "005192002345", donVi: "Ban Lãnh đạo", chucDanh: "Trợ lý Giám đốc", boPhanCongTac: "Ban Lãnh đạo", congTacChinhDangLam: "Hỗ trợ điều hành", diaChiThuongTru: "200 Nguyễn Trãi, Hà Nội", dienThoai: "0923456789", danToc: "Kinh", tonGiao: "Phật giáo", noiSinhTP: "Hồ Chí Minh", noiSinhPhuong: "Phường 1", queQuanTP: "Hồ Chí Minh", queQuanPhuong: "Phường 2", thuongTruTP: "Hà Nội", ngayTiepNhan: "2024-02-10" },
+        { id: 3, hoTen: "Lê Văn F", maNV: "NV006", gioiTinh: "Nam", ngaySinh: "1990-11-30", cccd: "006190003456", donVi: "Phòng Hành chính", chucDanh: "Chuyên viên HC", boPhanCongTac: "Phòng Hành chính", congTacChinhDangLam: "Quản lý hồ sơ", diaChiThuongTru: "300 Láng Hạ, Hà Nội", dienThoai: "0934567890", danToc: "Kinh", tonGiao: "Không", noiSinhTP: "Đà Nẵng", noiSinhPhuong: "Phường Hải Châu", queQuanTP: "Đà Nẵng", queQuanPhuong: "Phường Thanh Khê", thuongTruTP: "Hà Nội", ngayTiepNhan: "2024-03-05" },
+    ];
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const navSteps = document.querySelectorAll('.nav-step');
+        const mainContent = document.getElementById('mainContent');
+        const slideInDetailView = document.getElementById('slideInDetailView');
+        
+        // --- AUTH & FIREBASE INITIALIZATION ---
+        // Trong môi trường thực, cần khởi tạo Firebase và xử lý Auth ở đây
+
+        // --- GLOBAL UTILITIES (Modal/Slide-in) ---
+        window.openModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            const inner = document.getElementById(modalId + 'Inner'); // Dùng ID + 'Inner' làm mặc định
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    if (inner) inner.classList.remove('scale-95', 'opacity-0');
+                    if (inner) inner.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+        };
+
+        window.closeModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            const inner = document.getElementById(modalId + 'Inner');
+            if (modal) {
+                if (inner) inner.classList.remove('scale-100', 'opacity-100');
+                if (inner) inner.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        };
+        
+        window.openSlideIn = (recordId) => {
+            const record = mockData.find(d => d.id === recordId);
+            if (!record) return;
+
+            document.getElementById('detailName').textContent = record.hoTen;
+            renderDetailTabs(record);
+            slideInDetailView.classList.add('open');
+        };
+
+        window.closeSlideIn = () => {
+            slideInDetailView.classList.remove('open');
+        };
+
+        // Hàm mở modal chọn từ HSNV
+        window.openSelectHSNVModal = () => {
+            closeModal('modalAddNewOption');
+            renderHSNVList();
+            openModal('modalSelectHSNV');
+        };
+
+        // Render danh sách HSNV
+        window.renderHSNVList = () => {
+            const rows = mockEmployees.map(emp => `
+                <tr class="hover:bg-gray-50 cursor-pointer" onclick="selectFromHSNV(${emp.id})">
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${emp.hoTen}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.maNV}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.donVi}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.chucDanh}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.gioiTinh}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(emp.ngaySinh).toLocaleDateString('vi-VN')}</td>
+                    <td class="p-3 text-sm text-center">
+                        <button onclick="event.stopPropagation(); selectFromHSNV(${emp.id})" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
+                            <i class="fas fa-check mr-1"></i>Chọn
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('hsnvListContainer').innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã NV</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Đơn vị</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Giới tính</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày sinh</th>
+                            <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${rows}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        // Lọc danh sách HSNV
+        window.filterHSNVList = () => {
+            const nameFilter = document.getElementById('filterHSNVName').value.toLowerCase();
+            const codeFilter = document.getElementById('filterHSNVCode').value.toLowerCase();
+            const unitFilter = document.getElementById('filterHSNVUnit').value;
+
+            const filtered = mockEmployees.filter(emp => {
+                const matchName = emp.hoTen.toLowerCase().includes(nameFilter);
+                const matchCode = emp.maNV.toLowerCase().includes(codeFilter);
+                const matchUnit = !unitFilter || emp.donVi.includes(unitFilter);
+                return matchName && matchCode && matchUnit;
+            });
+
+            const rows = filtered.map(emp => `
+                <tr class="hover:bg-gray-50 cursor-pointer" onclick="selectFromHSNV(${emp.id})">
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${emp.hoTen}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.maNV}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.donVi}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.chucDanh}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${emp.gioiTinh}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(emp.ngaySinh).toLocaleDateString('vi-VN')}</td>
+                    <td class="p-3 text-sm text-center">
+                        <button onclick="event.stopPropagation(); selectFromHSNV(${emp.id})" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">
+                            <i class="fas fa-check mr-1"></i>Chọn
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('hsnvListContainer').querySelector('tbody').innerHTML = 
+                rows || '<tr><td colspan="7" class="p-4 text-center text-gray-500">Không tìm thấy nhân viên nào.</td></tr>';
+        };
+
+        // Chọn nhân viên từ HSNV và fill vào form
+        window.selectFromHSNV = (empId) => {
+            const emp = mockEmployees.find(e => e.id === empId);
+            if (!emp) return;
+
+            closeModal('modalSelectHSNV');
+            
+            // Reset form
+            document.getElementById('qcRecordId').value = '';
+            document.getElementById('qcForm').reset();
+            document.getElementById('fromHSNV').value = 'true';
+
+            // Auto-fill các trường từ HSNV (đánh dấu 📋 HSNV)
+            document.getElementById('hoTen').value = emp.hoTen;
+            document.getElementById('maNV').value = emp.maNV;
+            document.getElementById('maNV').required = true; // Bắt buộc khi chọn từ HSNV
+            document.getElementById('donVi').value = `Chi bộ ${emp.donVi}`;
+            updateChiBoCha(); // Cập nhật chi bộ cha
+            document.getElementById('chucDanh').value = emp.chucDanh;
+            document.getElementById('gioiTinh').value = emp.gioiTinh;
+            document.getElementById('ngaySinh').value = emp.ngaySinh;
+            document.getElementById('cccd').value = emp.cccd;
+            document.getElementById('danToc').value = emp.danToc || '';
+            document.getElementById('tonGiao').value = emp.tonGiao || '';
+            document.getElementById('ngayTiepNhan').value = emp.ngayTiepNhan || new Date().toISOString().substring(0, 10);
+            
+            // Địa chỉ
+            document.getElementById('noiSinhTP').value = emp.noiSinhTP || '';
+            document.getElementById('noiSinhPhuong').value = emp.noiSinhPhuong || '';
+            document.getElementById('queQuanTP').value = emp.queQuanTP || '';
+            document.getElementById('queQuanPhuong').value = emp.queQuanPhuong || '';
+            document.getElementById('thuongTruTP').value = emp.thuongTruTP || '';
+            document.getElementById('diaChiThuongTru').value = emp.diaChiThuongTru;
+            
+            // Công tác
+            document.getElementById('boPhanCongTac').value = emp.boPhanCongTac;
+            document.getElementById('congTacChinhDangLam').value = emp.congTacChinhDangLam;
+            document.getElementById('dienThoai').value = emp.dienThoai || '';
+
+            // Mở modal nhập liệu với dữ liệu đã fill
+            openModal('modalDataEntry');
+            
+            // Hiển thị thông báo
+            setTimeout(() => {
+                alert(`✅ Đã tự động điền thông tin từ HSNV: ${emp.hoTen} (${emp.maNV})\n\n📝 Vui lòng kiểm tra và bổ sung các trường còn thiếu.`);
+            }, 500);
+        };
+
+        // Hàm cập nhật chi bộ cha
+        window.updateChiBoCha = () => {
+            const donVi = document.getElementById('donVi').value;
+            const chiBoChaInput = document.getElementById('chiBoCha');
+            
+            if (donVi) {
+                chiBoChaInput.value = "Đảng ủy Khối Cơ quan";
+            } else {
+                chiBoChaInput.value = "";
+            }
+        };
+
+        // Hàm mở modal nhập tay hồ sơ mới (Tách ra từ modalAddNewOption)
+        window.openManualEntry = () => {
+            closeModal('modalAddNewOption');
+            // Đảm bảo form sạch khi mở nhập mới
+            document.getElementById('qcRecordId').value = ''; 
+            document.getElementById('qcForm').reset();
+            document.getElementById('fromHSNV').value = 'false';
+            
+            // Set ngày tiếp nhận mặc định là hôm nay
+            document.getElementById('ngayTiepNhan').value = new Date().toISOString().substring(0, 10);
+            
+            openModal('modalDataEntry');
+        };
+
+
+        // --- HELPER FUNCTIONS ---
+        const getStatusBadge = (status) => {
+            let color = 'bg-gray-100 text-gray-800';
+            if (status.includes('Hoàn thành')) color = 'bg-green-100 text-green-700';
+            else if (status.includes('Đang thực hiện') || status.includes('Đang học') || status.includes('Đang rèn luyện')) color = 'bg-yellow-100 text-yellow-700';
+            else if (status.includes('Ko hoàn thành')) color = 'bg-red-100 text-red-700';
+            else if (status.includes('Lớp Nhận thức')) color = 'bg-blue-100 text-blue-700';
+            else if (status.includes('Rèn luyện')) color = 'bg-purple-100 text-purple-700';
+            else if (status.includes('Hoàn thiện')) color = 'bg-indigo-100 text-indigo-700';
+            
+            return `<span class="px-2 py-1 font-semibold leading-tight ${color} rounded-full text-xs">${status}</span>`;
+        };
+
+        // Hàm cập nhật trạng thái tiến trình của Hồ sơ
+        window.updateRecordProgress = (recordId, stepName, status, note = null) => {
+            const record = mockData.find(d => d.id === recordId);
+            if (!record) return;
+
+            const now = new Date().toLocaleDateString('vi-VN');
+            const stepIndex = Object.values(STEPS).indexOf(stepName);
+
+            // 1. Cập nhật trạng thái tổng quát
+            record.trangThai = stepName;
+            record.currentStepIndex = stepIndex;
+
+            // 2. Cập nhật chi tiết Timeline
+            let progressItem = record.progress.find(p => p.step === stepName);
+            if (!progressItem) {
+                // Tạo mới nếu chưa có
+                progressItem = { step: stepName, status: status, start: now, end: status === 'Hoàn thành' ? now : 'N/A', note: note || "" };
+                record.progress.splice(stepIndex, 0, progressItem);
+            } else {
+                // Cập nhật existing item
+                if (progressItem.status === 'Chưa bắt đầu' || !progressItem.start || progressItem.start === 'N/A') {
+                    progressItem.start = now; // Ghi nhận ngày bắt đầu nếu chưa có
+                }
+                progressItem.status = status;
+                if (status.includes('Hoàn thành')) {
+                    progressItem.end = now;
+                } else if (status.includes('Đang thực hiện') || status.includes('Đang học') || status.includes('Đang rèn luyện')) {
+                    progressItem.end = 'N/A';
+                }
+                if (note) {
+                    progressItem.note = note;
+                }
+            }
+
+            // 3. Xử lý logic chuyển bước tự động (LOP_NHAN_THUC -> REN_LUYEN)
+            if (stepName === STEPS.LOP_NHAN_THUC && status === 'Hoàn thành') {
+                const nextStepIndex = Object.values(STEPS).indexOf(STEPS.REN_LUYEN);
+                
+                // Cập nhật trạng thái tổng quát lên REN_LUYEN
+                record.trangThai = STEPS.REN_LUYEN;
+                record.currentStepIndex = nextStepIndex;
+
+                // Cập nhật chi tiết Timeline cho REN_LUYEN
+                let nextProgressItem = record.progress.find(p => p.step === STEPS.REN_LUYEN);
+                if (!nextProgressItem) {
+                    nextProgressItem = { step: STEPS.REN_LUYEN, status: "Đang thực hiện", start: now, end: "N/A", note: "Chuyển sang Rèn luyện sau khi hoàn thành Lớp nhận thức." };
+                    record.progress.splice(nextStepIndex, 0, nextProgressItem);
+                } else {
+                    nextProgressItem.status = "Đang thực hiện";
+                    if (!nextProgressItem.start || nextProgressItem.start === 'N/A') { nextProgressItem.start = now; }
+                    nextProgressItem.note = "Chuyển sang Rèn luyện sau khi hoàn thành Lớp nhận thức.";
+                    nextProgressItem.end = 'N/A';
+                }
+                
+                // Khởi tạo trạng thái rèn luyện
+                if (!record.trainingStatus) {
+                    record.trainingStatus = "Đang rèn luyện";
+                }
+            }
+
+            // 4. Xử lý logic chuyển bước tự động (REN_LUYEN -> HOAN_THIEN)
+            if (stepName === STEPS.REN_LUYEN && status === 'Hoàn thành') {
+                const nextStepIndex = Object.values(STEPS).indexOf(STEPS.HOAN_THIEN);
+                
+                // Cập nhật trạng thái tổng quát lên HOAN_THIEN
+                record.trangThai = STEPS.HOAN_THIEN;
+                record.currentStepIndex = nextStepIndex;
+
+                // Cập nhật chi tiết Timeline cho HOAN_THIEN
+                let nextProgressItem = record.progress.find(p => p.step === STEPS.HOAN_THIEN);
+                if (!nextProgressItem) {
+                    nextProgressItem = { step: STEPS.HOAN_THIEN, status: "Đang thực hiện", start: now, end: "N/A", note: "Chuyển sang Hoàn thiện hồ sơ sau rèn luyện." };
+                    record.progress.splice(nextStepIndex, 0, nextProgressItem);
+                } else {
+                    nextProgressItem.status = "Đang thực hiện";
+                    if (!nextProgressItem.start || nextProgressItem.start === 'N/A') { nextProgressItem.start = now; }
+                    nextProgressItem.note = "Chuyển sang Hoàn thiện hồ sơ sau rèn luyện."
+                    nextProgressItem.end = 'N/A';
+                }
+            }
+
+            // 5. Xử lý logic chuyển bước tự động (HOAN_THIEN -> KET_NAP)
+            if (stepName === STEPS.HOAN_THIEN && status === 'Hoàn thành') {
+                const nextStepIndex = Object.values(STEPS).indexOf(STEPS.KET_NAP);
+                
+                // Cập nhật trạng thái tổng quát lên KET_NAP
+                record.trangThai = STEPS.KET_NAP;
+                record.currentStepIndex = nextStepIndex;
+
+                // Khởi tạo trạng thái kết nạp
+                if (!record.ketNapStatus) {
+                    record.ketNapStatus = "Đang thực hiện";
+                }
+
+                // Cập nhật chi tiết Timeline cho KET_NAP
+                let nextProgressItem = record.progress.find(p => p.step === STEPS.KET_NAP);
+                if (!nextProgressItem) {
+                    nextProgressItem = { step: STEPS.KET_NAP, status: "Đang thực hiện", start: now, end: "N/A", note: "Chuyển sang Quyết định kết nạp sau khi đủ hồ sơ." };
+                    record.progress.splice(nextStepIndex, 0, nextProgressItem);
+                } else {
+                    nextProgressItem.status = "Đang thực hiện";
+                    if (!nextProgressItem.start || nextProgressItem.start === 'N/A') { nextProgressItem.start = now; }
+                    nextProgressItem.note = "Chuyển sang Quyết định kết nạp sau khi đủ hồ sơ."
+                    nextProgressItem.end = 'N/A';
+                }
+            }
+
+            // Đồng bộ trạng thái Lớp nhận thức (nếu áp dụng)
+            if (stepName === STEPS.LOP_NHAN_THUC && status.includes('Hoàn thành')) {
+                record.classStatus = 'Hoàn thành';
+            }
+
+
+            // Re-render UI
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'quan-chung') {
+                renderQCTable();
+            } else if (activeTarget === 'lop-nhan-thuc') {
+                 if (document.getElementById('modalClassDetail').classList.contains('flex')) {
+                    renderClassStudentList(currentClassId);
+                 }
+                 renderClassTable();
+            } else if (activeTarget === 'ren-luyen') {
+                 if (document.getElementById('modalMentorDetail').classList.contains('flex')) {
+                    renderMentorStudentList(currentMentorId);
+                 }
+                 renderMentorTable();
+            } else if (activeTarget === 'hoan-thien') {
+                 renderDocumentCompletionTable();
+            } else if (activeTarget === 'ket-nap') {
+                 renderAdmissionDecisionTable();
+            }
+
+            console.log(`Tiến trình HS ${recordId} cập nhật: ${stepName} - ${status}`);
+        };
+
+        // FIX: Định nghĩa hàm bị thiếu
+        window.openClassStatusUpdateModal = () => {
+            const cls = mockClasses.find(c => c.id === currentClassId);
+            if (!cls) return;
+
+            const studentsInClass = mockData.filter(d => d.classId === currentClassId);
+            const dangHoc = studentsInClass.filter(d => d.classStatus === 'Đang học').length;
+            const hoanThanh = studentsInClass.filter(d => d.classStatus === 'Hoàn thành').length;
+            const khongHoanThanh = studentsInClass.filter(d => d.classStatus === 'Không hoàn thành').length;
+
+            const message = `🎓 Lớp: ${cls.name}\n📊 Thống kê:\n  • Đang học: ${dangHoc} học viên\n  • Hoàn thành: ${hoanThanh} học viên\n  • Không hoàn thành: ${khongHoanThanh} học viên\n\n❓ Bạn muốn chuyển trạng thái lớp sang?`;
+
+            const choice = confirm(`${message}\n\nChọn:\n✅ OK: Hoàn thành\n❌ Cancel: Không hoàn thành`);
+
+            if (choice) {
+                // Hoàn thành lớp
+                cls.status = 'Hoàn thành';
+                
+                // Cập nhật tất cả học viên Hoàn thành → REN_LUYEN
+                studentsInClass.forEach(student => {
+                    if (student.classStatus === 'Hoàn thành') {
+                        updateRecordProgress(student.id, STEPS.LOP_NHAN_THUC, 'Hoàn thành', `Hoàn thành lớp ${cls.name}. Tự động chuyển sang Rèn luyện.`);
+                    } else if (student.classStatus === 'Không hoàn thành') {
+                        updateRecordProgress(student.id, STEPS.LOP_NHAN_THUC, 'Không hoàn thành', `Không hoàn thành lớp ${cls.name}.`);
+                    }
+                });
+
+                alert(`✅ Đã chuyển lớp "${cls.name}" sang trạng thái "Hoàn thành".\n\n📋 ${hoanThanh} học viên hoàn thành đã được tự động chuyển sang bước "Rèn luyện".`);
+            } else {
+                // Không hoàn thành lớp
+                cls.status = 'Không hoàn thành';
+                
+                studentsInClass.forEach(student => {
+                    updateRecordProgress(student.id, STEPS.LOP_NHAN_THUC, 'Không hoàn thành', `Lớp ${cls.name} không hoàn thành.`);
+                });
+
+                alert(`⚠️ Đã chuyển lớp "${cls.name}" sang trạng thái "Không hoàn thành".\n\nTất cả học viên đã được đánh dấu không hoàn thành.`);
+            }
+
+            closeModal('modalClassDetail');
+            
+            // Re-render
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'lop-nhan-thuc') {
+                mainContent.innerHTML = renderClassTable();
+            }
+            renderQCTable();
+        };
+
+
+        // --- LOGIC FOR TAB: Quần Chúng Ưu Tú (QC) ---
+
+        const renderQCTable = () => {
+            const rows = mockData.map(item => `
+                <tr class="hover:bg-gray-50 cursor-pointer" onclick="openSlideIn(${item.id})">
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${item.hoTen}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${item.gioiTinh}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${item.donVi}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(item.ngayTiepNhan).toLocaleDateString('vi-VN')}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(item.ngaySinh).toLocaleDateString('vi-VN')}</td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${item.cccd}</td>
+                    <td class="p-3 text-sm whitespace-nowrap">
+                        ${getStatusBadge(item.trangThai)}
+                    </td>
+                    <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">
+                        <button onclick="event.stopPropagation(); openEditQCModal(${item.id});" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="event.stopPropagation(); deleteRecord(${item.id});" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Danh sách Quần Chúng Ưu Tú</h2>
+                    <button onclick="openModal('modalAddNewOption')" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-plus mr-2"></i> Thêm mới
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Giới tính</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Đơn vị</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày TN</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày sinh</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">CMND/CCCD</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                                <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
+        window.openEditQCModal = (id) => {
+            const record = mockData.find(d => d.id === id);
+            if (!record) return;
+
+            document.getElementById('qcRecordId').value = record.id;
+            document.getElementById('fromHSNV').value = 'false';
+            
+            // I. Thông tin cơ bản
+            document.getElementById('hoTen').value = record.hoTen || '';
+            document.getElementById('maNV').value = record.maNV || '';
+            document.getElementById('donVi').value = record.donVi || '';
+            document.getElementById('chiBoCha').value = record.chiBoCha || 'Đảng ủy Khối Cơ quan';
+            document.getElementById('chucDanh').value = record.chucDanh || '';
+            document.getElementById('chucDanhChinhQuyen').value = record.chucDanhChinhQuyen || '';
+            document.getElementById('chucDanhDoanThe').value = record.chucDanhDoanThe || '';
+            document.getElementById('gioiTinh').value = record.gioiTinh || '';
+            document.getElementById('ngaySinh').value = record.ngaySinh || '';
+            document.getElementById('cccd').value = record.cccd || '';
+            document.getElementById('danToc').value = record.danToc || '';
+            document.getElementById('tonGiao').value = record.tonGiao || '';
+            document.getElementById('ngayTiepNhan').value = record.ngayTiepNhan || '';
+            
+            // II. Địa chỉ
+            document.getElementById('noiSinhTP').value = record.noiSinhTP || '';
+            document.getElementById('noiSinhPhuong').value = record.noiSinhPhuong || '';
+            document.getElementById('diaChiNoiSinh').value = record.diaChiNoiSinh || '';
+            document.getElementById('queQuanTP').value = record.queQuanTP || '';
+            document.getElementById('queQuanPhuong').value = record.queQuanPhuong || '';
+            document.getElementById('diaChiQueQuan').value = record.diaChiQueQuan || '';
+            document.getElementById('noiOHienNayTP').value = record.noiOHienNayTP || '';
+            document.getElementById('noiOHienNayPhuong').value = record.noiOHienNayPhuong || '';
+            document.getElementById('diaChiNoiOHienNay').value = record.diaChiNoiOHienNay || '';
+            document.getElementById('thuongTruTP').value = record.thuongTruTP || '';
+            document.getElementById('diaChiThuongTru').value = record.diaChiThuongTru || '';
+            document.getElementById('thanhPhanGiaDinh').value = record.thanhPhanGiaDinh || '';
+            
+            // III. Công tác
+            document.getElementById('ngheNghiepTruocTuyenDung').value = record.ngheNghiepTruocTuyenDung || '';
+            document.getElementById('ngayTuyenDung').value = record.ngayTuyenDung || '';
+            document.getElementById('donViTuyenDung').value = record.donViTuyenDung || '';
+            document.getElementById('ngayVaoCoQuan').value = record.ngayVaoCoQuan || '';
+            document.getElementById('boPhanCongTac').value = record.boPhanCongTac || '';
+            document.getElementById('congTacChinhDangLam').value = record.congTacChinhDangLam || '';
+            document.getElementById('ngachCongChuc').value = record.ngachCongChuc || '';
+            document.getElementById('bacLuong').value = record.bacLuong || '';
+            document.getElementById('heSo').value = record.heSo || '';
+            document.getElementById('tuThang').value = record.tuThang || '';
+            document.getElementById('soTruongCongTac').value = record.soTruongCongTac || '';
+            document.getElementById('congViecLauNhat').value = record.congViecLauNhat || '';
+            document.getElementById('dienThoai').value = record.dienThoai || '';
+            document.getElementById('danhHieu').value = record.danhHieu || '';
+
+            openModal('modalDataEntry');
+        };
+
+        // --- LOGIC FOR TAB: Lớp Nhận Thức (LNT) ---
+        
+        const renderClassTable = () => {
+            const rows = mockClasses.map(cls => {
+                const totalStudents = mockData.filter(d => d.classId === cls.id).length;
+                // Hoàn thành ở đây là đã chuyển sang bước Rèn Luyện (REN_LUYEN)
+                const completedStudents = mockData.filter(d => d.classId === cls.id && d.trangThai === STEPS.REN_LUYEN).length;
+                
+                let statusBadge = getStatusBadge(cls.status);
+                let actions = `
+                    <button onclick="event.stopPropagation(); openClassDetailModal(${cls.id});" class="text-indigo-600 hover:text-indigo-800 mr-2" title="Xem Chi tiết"><i class="fas fa-eye"></i></button>
+                    <button onclick="event.stopPropagation(); deleteClass(${cls.id});" class="text-red-600 hover:text-red-800" title="Xóa Lớp"><i class="fas fa-trash"></i></button>
+                `;
+
+                return `
+                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openClassDetailModal(${cls.id})">
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${cls.name}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(cls.start).toLocaleDateString('vi-VN')}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(cls.end).toLocaleDateString('vi-VN')}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-center">${totalStudents}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-center">${completedStudents}</td>
+                        <td class="p-3 text-sm whitespace-nowrap">${statusBadge}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Danh sách Lớp Nhận Thức</h2>
+                    <button onclick="openModal('modalCreateClass')" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-plus mr-2"></i> Tạo mới Lớp
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tên lớp</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày BĐ</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày KT</th>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sĩ số</th>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Hoàn thành</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái lớp</th>
+                                <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+        
+        // Xử lý submit form tạo lớp mới
+        window.handleClassSubmit = (event) => {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const className = formData.get('className');
+            const classYear = formData.get('classYear');
+            const classStart = formData.get('classStart');
+            const classEnd = formData.get('classEnd');
+            const classNote = formData.get('classNote');
+
+            // Validate ngày
+            if (new Date(classStart) > new Date(classEnd)) {
+                alert('⚠️ Ngày bắt đầu phải trước ngày kết thúc!');
+                return;
+            }
+
+            // Tạo lớp mới
+            const newClass = {
+                id: mockClasses.length > 0 ? Math.max(...mockClasses.map(c => c.id)) + 1 : 1,
+                name: className,
+                year: parseInt(classYear),
+                start: classStart,
+                end: classEnd,
+                status: "Đang học",
+                note: classNote || "",
+                students: []
+            };
+
+            mockClasses.push(newClass);
+            
+            closeModal('modalCreateClass');
+            event.target.reset();
+            
+            // Re-render
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'lop-nhan-thuc') {
+                mainContent.innerHTML = renderClassTable();
+            }
+            
+            alert(`✅ Đã tạo lớp "${className}" thành công!`);
+        };
+
+        // Xóa lớp
+        window.deleteClass = (classId) => {
+            const cls = mockClasses.find(c => c.id === classId);
+            if (!cls) return;
+
+            const studentCount = mockData.filter(d => d.classId === classId).length;
+            
+            if (studentCount > 0) {
+                if (!confirm(`⚠️ Lớp "${cls.name}" có ${studentCount} học viên.\n\nBạn có chắc chắn muốn xóa? Các học viên sẽ bị xóa khỏi lớp.`)) {
+                    return;
+                }
+                
+                // Xóa học viên khỏi lớp
+                mockData.forEach(d => {
+                    if (d.classId === classId) {
+                        d.classId = null;
+                        d.classEntryDate = null;
+                        d.classStatus = null;
+                        
+                        // Rollback trạng thái về Quần chúng ưu tú nếu đang ở Lớp nhận thức
+                        if (d.trangThai === STEPS.LOP_NHAN_THUC) {
+                            updateRecordProgress(d.id, STEPS.QUAN_CHUNG, 'Đang thực hiện', 'Đã xóa khỏi lớp nhận thức.');
+                        }
+                    }
+                });
+            } else {
+                if (!confirm(`Bạn có chắc chắn muốn xóa lớp "${cls.name}"?`)) {
+                    return;
+                }
+            }
+
+            mockClasses = mockClasses.filter(c => c.id !== classId);
+            
+            // Re-render
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'lop-nhan-thuc') {
+                mainContent.innerHTML = renderClassTable();
+            }
+            
+            renderQCTable();
+            alert(`✅ Đã xóa lớp thành công!`);
+        };
+
+        // Mở modal chi tiết lớp
+        window.openClassDetailModal = (classId) => {
+            const cls = mockClasses.find(c => c.id === classId);
+            if (!cls) return;
+            currentClassId = classId;
+
+            const students = mockData.filter(d => d.classId === classId);
+            const completedStudents = students.filter(d => d.classStatus === 'Hoàn thành').length;
+
+            document.getElementById('detailClassName').textContent = cls.name;
+            document.getElementById('detailClassYear').textContent = cls.year;
+            document.getElementById('detailClassDates').textContent = `${new Date(cls.start).toLocaleDateString('vi-VN')} - ${new Date(cls.end).toLocaleDateString('vi-VN')}`;
+            document.getElementById('detailClassSize').textContent = students.length;
+            document.getElementById('detailClassCompleted').textContent = completedStudents;
+            document.getElementById('detailClassStatus').textContent = cls.status;
+            document.getElementById('detailClassNote').textContent = cls.note || 'Không có ghi chú';
+            document.getElementById('currentClassSize').textContent = students.length;
+
+            renderClassStudentList(classId);
+            openModal('modalClassDetail');
+        };
+
+        // Render danh sách học viên trong lớp
+        const renderClassStudentList = (classId) => {
+            const studentsInClass = mockData.filter(d => d.classId === classId);
+            const total = studentsInClass.length;
+
+            document.getElementById('detailClassSize').textContent = total;
+            document.getElementById('currentClassSize').textContent = total;
+
+            const studentRows = studentsInClass.map(student => {
+                const status = student.classStatus || "Đang học";
+                let actions = '';
+                
+                // Nút cập nhật trạng thái
+                if (status === "Đang học") {
+                    actions = `
+                        <button onclick="event.stopPropagation(); updateStudentResult(${student.id}, 'Hoàn thành');" class="text-green-600 hover:text-green-800 mr-2" title="Hoàn thành"><i class="fas fa-check-circle"></i></button>
+                        <button onclick="event.stopPropagation(); updateStudentResult(${student.id}, 'Không hoàn thành');" class="text-red-600 hover:text-red-800 mr-2" title="Không hoàn thành"><i class="fas fa-times-circle"></i></button>
+                    `;
+                }
+                actions += `<button onclick="event.stopPropagation(); removeStudentFromClass(${student.id});" class="text-orange-600 hover:text-orange-800" title="Xóa khỏi lớp"><i class="fas fa-user-times"></i></button>`;
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${student.hoTen}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.maNV || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.donVi}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.chucDanh || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.classEntryDate ? new Date(student.classEntryDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                        <td class="p-3 text-sm whitespace-nowrap">${getStatusBadge(status)}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('classStudentList').innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã hồ sơ / NV</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tổ chức / Chi bộ</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày vào lớp</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái lớp</th>
+                            <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${studentRows.length > 0 ? studentRows : '<tr><td colspan="7" class="p-4 text-center text-gray-500">Chưa có học viên nào trong lớp.</td></tr>'}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        // Mở modal thêm học viên
+        window.openAddStudentModal = () => {
+            // Chỉ lấy hồ sơ ở bước Quần chúng ưu tú (Step 0) và chưa có lớp
+            const availableStudents = mockData.filter(d => 
+                d.trangThai === STEPS.QUAN_CHUNG && 
+                d.classId === null
+            );
+            
+            const listHTML = availableStudents.map(student => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border hover:bg-blue-50 transition">
+                    <div class="flex items-center flex-1">
+                        <input type="checkbox" data-id="${student.id}" onchange="updateSelectedCount()" class="form-checkbox text-primary-red h-5 w-5 rounded mr-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">${student.hoTen} <span class="text-gray-500">(${student.maNV || 'N/A'})</span></p>
+                            <p class="text-xs text-gray-500">${student.donVi} - ${student.chucDanh || 'N/A'}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-700 rounded">${student.trangThai}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('availableStudentsList').innerHTML = listHTML.length > 0 
+                ? listHTML 
+                : '<p class="p-3 text-center text-gray-500">Không có hồ sơ nào đủ điều kiện (phải ở bước Quần chúng ưu tú và chưa tham gia lớp).</p>';
+            
+            document.getElementById('selectedCount').textContent = '0';
+            openModal('modalAddStudent');
+        };
+
+        window.updateSelectedCount = () => {
+            const count = document.querySelectorAll('#availableStudentsList input[type="checkbox"]:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+        };
+
+        // Thêm học viên đã chọn vào lớp
+        window.addSelectedStudents = () => {
+            const selectedIds = Array.from(document.querySelectorAll('#availableStudentsList input[type="checkbox"]:checked'))
+                .map(checkbox => parseInt(checkbox.dataset.id));
+
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một học viên.');
+                return;
+            }
+
+            const cls = mockClasses.find(c => c.id === currentClassId);
+            if (!cls) return;
+
+            const now = new Date().toISOString().substring(0, 10);
+
+            selectedIds.forEach(id => {
+                const record = mockData.find(d => d.id === id);
+                if (record) {
+                    // Gán vào lớp
+                    record.classId = currentClassId;
+                    record.classEntryDate = now;
+                    record.classStatus = 'Đang học';
+                    
+                    // Cập nhật trạng thái tiến trình sang Lớp nhận thức
+                    updateRecordProgress(id, STEPS.LOP_NHAN_THUC, 'Đang thực hiện', `Tham gia ${cls.name}. Đang học tập.`);
+                }
+            });
+
+            closeModal('modalAddStudent');
+            renderClassStudentList(currentClassId);
+            
+            // Re-render bảng class và QCUT
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'lop-nhan-thuc') {
+                mainContent.innerHTML = renderClassTable();
+                openClassDetailModal(currentClassId); // Mở lại modal chi tiết
+            }
+            renderQCTable();
+            
+            alert(`✅ Đã thêm ${selectedIds.length} học viên vào lớp "${cls.name}" thành công!\n\n📋 Trạng thái hồ sơ đã được cập nhật sang "Lớp nhận thức".`);
+        };
+
+        // Xóa học viên khỏi lớp
+        window.removeStudentFromClass = (studentId) => {
+            if (!confirm("Bạn có chắc chắn muốn xóa học viên này khỏi lớp?")) return;
+            
+            const student = mockData.find(d => d.id === studentId);
+            if (student) {
+                const classId = student.classId;
+                
+                // Xóa khỏi lớp
+                student.classId = null;
+                student.classEntryDate = null;
+                student.classStatus = null;
+
+                // Rollback trạng thái về Quần chúng ưu tú
+                updateRecordProgress(studentId, STEPS.QUAN_CHUNG, 'Đang thực hiện', `Đã xóa khỏi lớp. Chờ phân lớp lại.`);
+
+                renderClassStudentList(classId);
+                
+                // Re-render
+                const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+                if (activeTarget === 'lop-nhan-thuc') {
+                    mainContent.innerHTML = renderClassTable();
+                    openClassDetailModal(classId);
+                }
+                renderQCTable();
+            }
+        };
+        
+        // Cập nhật kết quả học viên
+        window.updateStudentResult = (studentId, status) => {
+            const student = mockData.find(d => d.id === studentId);
+            if (!student) return;
+
+            student.classStatus = status;
+
+            if (status === 'Hoàn thành') {
+                // Tự động chuyển trạng thái hoàn thành LNT
+                let note = `Hoàn thành Lớp Nhận thức ${mockClasses.find(c=>c.id === student.classId).name}. Sẵn sàng cho Rèn luyện thử thách.`;
+                updateRecordProgress(studentId, STEPS.LOP_NHAN_THUC, 'Hoàn thành', note);
+
+                // Loại bỏ trạng thái rèn luyện nếu đã có, để chờ gán
+                student.mentorId = null; 
+                student.trainingStatus = null;
+            }
+            
+            renderClassStudentList(currentClassId);
+            renderQCTable(); // Cập nhật cả bảng QCUT
+        };
+
+        // --- LOGIC FOR TAB: Hoàn thiện Hồ sơ (HTHS) ---
+
+        const renderDocumentCompletionTable = () => {
+            // Lấy danh sách hồ sơ đã hoàn thành Rèn luyện (trangThai >= HOAN_THIEN)
+            const profilesInDocCompletion = mockData.filter(d => 
+                d.currentStepIndex >= Object.values(STEPS).indexOf(STEPS.HOAN_THIEN)
+            );
+            
+            const rows = profilesInDocCompletion.map(profile => {
+                const mentor = profile.mentorId ? mockMentors.find(m => m.id === profile.mentorId) : null;
+                
+                // Tính tiến độ hoàn thành tài liệu
+                const docs = profile.documents || {};
+                const completedDocs = Object.values(docs).filter(v => v === true).length;
+                const totalDocs = REQUIRED_DOCUMENTS.length;
+                const progressPercent = Math.round((completedDocs / totalDocs) * 100);
+                
+                // Trạng thái tổng
+                const overallStatus = completedDocs === totalDocs ? 'Đủ hồ sơ' : 'Chưa đủ';
+                const statusBadge = completedDocs === totalDocs 
+                    ? '<span class="px-2 py-1 font-semibold leading-tight bg-green-100 text-green-700 rounded-full text-xs">Đủ hồ sơ</span>'
+                    : '<span class="px-2 py-1 font-semibold leading-tight bg-yellow-100 text-yellow-700 rounded-full text-xs">Chưa đủ</span>';
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3">
+                            <input type="checkbox" data-profile-id="${profile.id}" class="form-checkbox text-primary-red h-4 w-4 rounded profile-checkbox" onchange="updateBulkSelectedCount()">
+                        </td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${profile.hoTen}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.chucDanh || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.donVi}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${mentor ? mentor.hoTen : 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                    <div class="bg-primary-red h-2 rounded-full" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700">${completedDocs}/${totalDocs}</span>
+                            </div>
+                        </td>
+                        <td class="p-3 text-sm whitespace-nowrap">${statusBadge}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">
+                            <button onclick="openDocumentDetailModal(${profile.id})" class="text-indigo-600 hover:text-indigo-800" title="Xem chi tiết">
+                                <i class="fas fa-eye mr-1"></i>Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Danh sách Hồ sơ Hoàn thiện Tài liệu</h2>
+                    <button onclick="openBulkUpdateModal()" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i> Cập nhật Hàng loạt
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="selectAllProfiles" class="form-checkbox text-primary-red h-4 w-4 rounded" onchange="toggleSelectAllProfiles(this)">
+                                </th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Đơn vị</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Người hướng dẫn</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tiến độ hoàn thành tài liệu</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái tổng</th>
+                                <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${rows.length > 0 ? rows : '<tr><td colspan="8" class="p-4 text-center text-gray-500">Chưa có hồ sơ nào ở bước Hoàn thiện.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
+        window.toggleSelectAllProfiles = (checkbox) => {
+            const checkboxes = document.querySelectorAll('.profile-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateBulkSelectedCount();
+        };
+
+        window.updateBulkSelectedCount = () => {
+            const count = document.querySelectorAll('.profile-checkbox:checked').length;
+            // Cập nhật nếu modal đang mở
+            const countElement = document.getElementById('bulkSelectedProfileCount');
+            if (countElement) countElement.textContent = count;
+        };
+
+        window.openDocumentDetailModal = (profileId) => {
+            const profile = mockData.find(d => d.id === profileId);
+            if (!profile) return;
+            currentDocProfileId = profileId;
+
+            const mentor = profile.mentorId ? mockMentors.find(m => m.id === profile.mentorId) : null;
+            const docs = profile.documents || {};
+            const completedDocs = Object.values(docs).filter(v => v === true).length;
+            const totalDocs = REQUIRED_DOCUMENTS.length;
+
+            document.getElementById('docDetailName').textContent = profile.hoTen;
+            document.getElementById('docDetailTitle').textContent = profile.chucDanh || 'N/A';
+            document.getElementById('docDetailUnit').textContent = profile.donVi;
+            document.getElementById('docDetailMentor').textContent = mentor ? mentor.hoTen : 'N/A';
+            document.getElementById('docDetailProgress').textContent = `${completedDocs}/${totalDocs}`;
+
+            // Render bảng checklist 6 tài liệu
+            const checklistRows = REQUIRED_DOCUMENTS.map(doc => {
+                const isSubmitted = docs[doc.id] === true;
+                const statusIcon = isSubmitted 
+                    ? '<span class="text-green-600 text-xl">✅</span>' 
+                    : '<span class="text-red-600 text-xl">❌</span>';
+                
+                const actionButton = `
+                    <button onclick="toggleDocumentStatus(${profileId}, ${doc.id})" 
+                        class="px-3 py-1 text-xs rounded ${isSubmitted ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'} transition">
+                        ${isSubmitted ? 'Đánh dấu Chưa nộp' : 'Đánh dấu Đã nộp'}
+                    </button>
+                `;
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-sm text-gray-700 text-center">${doc.id}</td>
+                        <td class="p-3 text-sm text-gray-700">${doc.name}</td>
+                        <td class="p-3 text-sm text-center">${statusIcon}</td>
+                        <td class="p-3 text-sm text-right">${actionButton}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('documentChecklistTable').innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">STT</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tài liệu cần nộp</th>
+                            <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${checklistRows}
+                    </tbody>
+                </table>
+            `;
+
+            openModal('modalDocumentDetail');
+        };
+
+        window.toggleDocumentStatus = (profileId, docId) => {
+            const profile = mockData.find(d => d.id === profileId);
+            if (!profile) return;
+            
+            if (!profile.documents) profile.documents = {};
+            profile.documents[docId] = !profile.documents[docId];
+
+            // Kiểm tra xem đã đủ 6/6 tài liệu chưa
+            const completedDocs = Object.values(profile.documents).filter(v => v === true).length;
+            const totalDocs = REQUIRED_DOCUMENTS.length;
+
+            if (completedDocs === totalDocs && profile.trangThai === STEPS.HOAN_THIEN) {
+                // Tự động chuyển sang bước Quyết định kết nạp
+                updateRecordProgress(profileId, STEPS.HOAN_THIEN, 'Hoàn thành', `Đã nộp đủ ${totalDocs}/${totalDocs} tài liệu.`);
+            } else {
+                // Cập nhật ghi chú tiến độ
+                const progressItem = profile.progress.find(p => p.step === STEPS.HOAN_THIEN);
+                if (progressItem) {
+                    progressItem.note = `Đang hoàn thiện hồ sơ (${completedDocs}/${totalDocs} tài liệu)`;
+                }
+            }
+
+            // Re-render
+            openDocumentDetailModal(profileId); // Refresh modal
+            renderDocumentCompletionTable();
+            renderQCTable(); // Cập nhật bảng tổng
+        };
+
+        window.openBulkUpdateModal = () => {
+            const profilesInDocCompletion = mockData.filter(d => 
+                d.currentStepIndex >= Object.values(STEPS).indexOf(STEPS.HOAN_THIEN)
+            );
+            
+            // Render danh sách hồ sơ
+            const profileListHTML = profilesInDocCompletion.map(profile => `
+                <label class="flex items-center p-2 hover:bg-gray-100 rounded">
+                    <input type="checkbox" data-bulk-profile-id="${profile.id}" class="form-checkbox text-primary-red h-4 w-4 rounded mr-2 bulk-profile-checkbox" onchange="updateBulkCounts()">
+                    <span class="text-sm text-gray-700">${profile.hoTen} - ${profile.donVi}</span>
+                </label>
+            `).join('');
+
+            document.getElementById('bulkProfileList').innerHTML = profileListHTML.length > 0 
+                ? profileListHTML 
+                : '<p class="p-3 text-center text-gray-500">Không có hồ sơ nào.</p>';
+
+            // Render danh sách 6 tài liệu
+            const documentListHTML = REQUIRED_DOCUMENTS.map(doc => `
+                <label class="flex items-center p-2 hover:bg-gray-100 rounded">
+                    <input type="checkbox" data-doc-id="${doc.id}" class="form-checkbox text-primary-red h-4 w-4 rounded mr-2 bulk-doc-checkbox" onchange="updateBulkCounts()">
+                    <span class="text-sm text-gray-700">${doc.id}. ${doc.name}</span>
+                </label>
+            `).join('');
+
+            document.getElementById('bulkDocumentList').innerHTML = documentListHTML;
+
+            // Reset counts
+            document.getElementById('bulkSelectedProfileCount').textContent = '0';
+            document.getElementById('bulkSelectedDocCount').textContent = '0';
+
+            openModal('modalBulkUpdate');
+        };
+
+        window.updateBulkCounts = () => {
+            const profileCount = document.querySelectorAll('.bulk-profile-checkbox:checked').length;
+            const docCount = document.querySelectorAll('.bulk-doc-checkbox:checked').length;
+            
+            document.getElementById('bulkSelectedProfileCount').textContent = profileCount;
+            document.getElementById('bulkSelectedDocCount').textContent = docCount;
+        };
+
+        window.handleBulkUpdate = (event) => {
+            event.preventDefault();
+            
+            const selectedProfileIds = Array.from(document.querySelectorAll('.bulk-profile-checkbox:checked'))
+                .map(cb => parseInt(cb.dataset.bulkProfileId));
+            
+            const selectedDocIds = Array.from(document.querySelectorAll('.bulk-doc-checkbox:checked'))
+                .map(cb => parseInt(cb.dataset.docId));
+            
+            const status = document.querySelector('input[name="bulkStatus"]:checked')?.value === 'true';
+
+            if (selectedProfileIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một hồ sơ.');
+                return;
+            }
+
+            if (selectedDocIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một loại tài liệu.');
+                return;
+            }
+
+            // Cập nhật hàng loạt
+            selectedProfileIds.forEach(profileId => {
+                const profile = mockData.find(d => d.id === profileId);
+                if (profile) {
+                    if (!profile.documents) profile.documents = {};
+                    
+                    selectedDocIds.forEach(docId => {
+                        profile.documents[docId] = status;
+                    });
+
+                    // Kiểm tra trạng thái tổng
+                    const completedDocs = Object.values(profile.documents).filter(v => v === true).length;
+                    const totalDocs = REQUIRED_DOCUMENTS.length;
+
+                    if (completedDocs === totalDocs && profile.trangThai === STEPS.HOAN_THIEN) {
+                        updateRecordProgress(profileId, STEPS.HOAN_THIEN, 'Hoàn thành', `Đã nộp đủ ${totalDocs}/${totalDocs} tài liệu.`);
+                    } else {
+                        const progressItem = profile.progress.find(p => p.step === STEPS.HOAN_THIEN);
+                        if (progressItem && profile.trangThai === STEPS.HOAN_THIEN) {
+                            progressItem.note = `Đang hoàn thiện hồ sơ (${completedDocs}/${totalDocs} tài liệu)`;
+                        }
+                    }
+                }
+            });
+
+            closeModal('modalBulkUpdate');
+            renderDocumentCompletionTable();
+            renderQCTable();
+            
+            alert(`Đã cập nhật ${selectedDocIds.length} loại tài liệu cho ${selectedProfileIds.length} hồ sơ thành công!`);
+        };
+
+        // --- LOGIC FOR TAB: Quyết định Kết nạp (QDKN) ---
+
+        const renderAdmissionDecisionTable = () => {
+            // Lấy danh sách hồ sơ đã hoàn thành Hoàn thiện hồ sơ (đủ 6/6 tài liệu)
+            const profilesForAdmission = mockData.filter(d => 
+                d.currentStepIndex >= Object.values(STEPS).indexOf(STEPS.KET_NAP)
+            );
+            
+            const rows = profilesForAdmission.map(profile => {
+                const ketNapStatus = profile.ketNapStatus || "Đang thực hiện";
+                const completedDate = profile.ketNapCompletedDate 
+                    ? new Date(profile.ketNapCompletedDate).toLocaleDateString('vi-VN')
+                    : 'N/A';
+                
+                // Tìm ngày hoàn thành bước Hoàn thiện hồ sơ
+                const hoanThienProgress = profile.progress.find(p => p.step === STEPS.HOAN_THIEN);
+                const hoanThienDate = hoanThienProgress && hoanThienProgress.end !== 'N/A' 
+                    ? hoanThienProgress.end 
+                    : 'N/A';
+
+                let statusBadge = getStatusBadge(ketNapStatus);
+                
+                // Dropdown trạng thái
+                const statusDropdown = `
+                    <select onchange="updateAdmissionStatus(${profile.id}, this.value)" 
+                        class="text-sm border rounded px-2 py-1 ${
+                            ketNapStatus === 'Hoàn thành' ? 'bg-green-50 border-green-300 text-green-700 font-semibold' :
+                            ketNapStatus === 'Không hoàn thành' ? 'bg-red-50 border-red-300 text-red-700' :
+                            'bg-yellow-50 border-yellow-300 text-yellow-700'
+                        }">
+                        <option value="Đang thực hiện" ${ketNapStatus === 'Đang thực hiện' ? 'selected' : ''}>Đang thực hiện</option>
+                        <option value="Không hoàn thành" ${ketNapStatus === 'Không hoàn thành' ? 'selected' : ''}>Không hoàn thành</option>
+                        <option value="Hoàn thành" ${ketNapStatus === 'Hoàn thành' ? 'selected' : ''}>Hoàn thành</option>
+                    </select>
+                `;
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3">
+                            <input type="checkbox" data-admission-id="${profile.id}" class="form-checkbox text-primary-red h-4 w-4 rounded admission-checkbox" onchange="updateAdmissionBulkCount()">
+                        </td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${profile.hoTen}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.maNV || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.gioiTinh}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(profile.ngaySinh).toLocaleDateString('vi-VN')}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.chucDanh || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${profile.donVi}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${hoanThienDate}</td>
+                        <td class="p-3 text-sm whitespace-nowrap">${statusDropdown}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-center">
+                            <button onclick="viewAdmissionDetail(${profile.id})" class="text-indigo-600 hover:text-indigo-800" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Danh sách Quyết định Kết nạp</h2>
+                    <button onclick="openBulkAdmissionModal()" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i> Cập nhật Hàng loạt
+                    </button>
+                </div>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-500 text-xl mr-3 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-1">Quy tắc nghiệp vụ:</h4>
+                            <p class="text-sm text-blue-700">
+                                Khi cập nhật trạng thái = <strong>"Hoàn thành"</strong>, hệ thống sẽ tự động:
+                            </p>
+                            <ul class="text-sm text-blue-700 list-disc list-inside mt-2 space-y-1">
+                                <li>Tạo mới bản ghi tại phân hệ <strong>Hồ sơ Đảng viên</strong></li>
+                                <li>Copy toàn bộ thông tin cơ bản từ hồ sơ phát triển</li>
+                                <li>Gán <strong>Chức danh Đảng = "Đảng viên dự bị"</strong></li>
+                                <li>Gán <strong>Ngày tiếp nhận = Ngày cập nhật trạng thái</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="selectAllAdmission" class="form-checkbox text-primary-red h-4 w-4 rounded" onchange="toggleSelectAllAdmission(this)">
+                                </th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã NV</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Giới tính</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày sinh</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Bộ phận</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày HT Hoàn thiện HS</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái kết nạp</th>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${rows.length > 0 ? rows : '<tr><td colspan="10" class="p-4 text-center text-gray-500">Chưa có hồ sơ nào sẵn sàng kết nạp.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+                
+                ${mockPartyMembers.length > 0 ? `
+                    <div class="mt-8 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 text-xl mr-3 mt-1"></i>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-green-800 mb-2">Đã chuyển sang Phân hệ Đảng viên (${mockPartyMembers.length})</h4>
+                                <div class="space-y-2">
+                                    ${mockPartyMembers.map(pm => `
+                                        <div class="bg-white p-3 rounded border border-green-200 text-sm">
+                                            <span class="font-semibold text-gray-700">${pm.hoTen}</span> 
+                                            <span class="text-gray-500">(${pm.maNV})</span> - 
+                                            <span class="text-green-700 font-medium">${pm.chucDanhDang}</span> - 
+                                            <span class="text-gray-500">Ngày tiếp nhận: ${new Date(pm.ngayTiepNhanDang).toLocaleDateString('vi-VN')}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        };
+
+        window.toggleSelectAllAdmission = (checkbox) => {
+            const checkboxes = document.querySelectorAll('.admission-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateAdmissionBulkCount();
+        };
+
+        window.updateAdmissionBulkCount = () => {
+            const count = document.querySelectorAll('.admission-checkbox:checked').length;
+            const countElement = document.getElementById('bulkAdmissionSelectedCount');
+            if (countElement) countElement.textContent = count;
+        };
+
+        window.updateAdmissionStatus = (profileId, newStatus) => {
+            const profile = mockData.find(d => d.id === profileId);
+            if (!profile) return;
+
+            const oldStatus = profile.ketNapStatus;
+            profile.ketNapStatus = newStatus;
+
+            if (newStatus === 'Hoàn thành') {
+                const now = new Date();
+                profile.ketNapCompletedDate = now.toISOString().substring(0, 10);
+
+                // Cập nhật tiến trình
+                updateRecordProgress(profileId, STEPS.KET_NAP, 'Hoàn thành', `Hoàn thành Quyết định kết nạp. Chuyển sang Đảng viên dự bị.`);
+
+                // Tạo bản ghi trong Phân hệ Đảng viên
+                createPartyMemberRecord(profile);
+
+                alert(`✅ Đã hoàn thành kết nạp cho ${profile.hoTen}.\n\n📋 Hồ sơ đã được tạo tự động tại Phân hệ Đảng viên với chức danh "Đảng viên dự bị".`);
+            } else if (newStatus === 'Không hoàn thành') {
+                updateRecordProgress(profileId, STEPS.KET_NAP, 'Không hoàn thành', `Kết nạp không hoàn thành.`);
+            } else {
+                updateRecordProgress(profileId, STEPS.KET_NAP, 'Đang thực hiện', `Đang xử lý quyết định kết nạp.`);
+            }
+
+            renderAdmissionDecisionTable();
+            renderQCTable();
+        };
+
+        window.createPartyMemberRecord = (profile) => {
+            const now = new Date();
+            
+            const partyMember = {
+                id: mockPartyMembers.length > 0 ? Math.max(...mockPartyMembers.map(m => m.id)) + 1 : 1,
+                originalProfileId: profile.id, // Liên kết với hồ sơ gốc
+                
+                // Copy thông tin cơ bản
+                hoTen: profile.hoTen,
+                maNV: profile.maNV,
+                gioiTinh: profile.gioiTinh,
+                ngaySinh: profile.ngaySinh,
+                cccd: profile.cccd,
+                diaChiThuongTru: profile.diaChiThuongTru,
+                donVi: profile.donVi,
+                chucDanh: profile.chucDanh,
+                
+                // Thông tin Đảng
+                chucDanhDang: "Đảng viên dự bị",
+                ngayTiepNhanDang: now.toISOString().substring(0, 10),
+                ngayKetNap: now.toISOString().substring(0, 10),
+                trangThaiDang: "Đang hoạt động",
+                
+                // Metadata
+                createdDate: now.toISOString(),
+                createdBy: "System Auto"
+            };
+
+            mockPartyMembers.push(partyMember);
+            console.log(`✅ Đã tạo Hồ sơ Đảng viên ID: ${partyMember.id} cho ${partyMember.hoTen}`);
+        };
+
+        window.viewAdmissionDetail = (profileId) => {
+            // Mở slide-in với thông tin chi tiết
+            openSlideIn(profileId);
+        };
+
+        window.openBulkAdmissionModal = () => {
+            const profilesForAdmission = mockData.filter(d => 
+                d.currentStepIndex >= Object.values(STEPS).indexOf(STEPS.KET_NAP)
+            );
+            
+            // Render danh sách hồ sơ
+            const profileListHTML = profilesForAdmission.map(profile => {
+                const ketNapStatus = profile.ketNapStatus || "Đang thực hiện";
+                let statusBadgeClass = 'bg-yellow-100 text-yellow-700';
+                if (ketNapStatus === 'Hoàn thành') statusBadgeClass = 'bg-green-100 text-green-700';
+                else if (ketNapStatus === 'Không hoàn thành') statusBadgeClass = 'bg-red-100 text-red-700';
+
+                return `
+                    <label class="flex items-center justify-between p-3 hover:bg-gray-100 rounded border">
+                        <div class="flex items-center flex-1">
+                            <input type="checkbox" data-bulk-admission-id="${profile.id}" class="form-checkbox text-primary-red h-4 w-4 rounded mr-3 bulk-admission-checkbox" onchange="updateBulkAdmissionCounts()">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700">${profile.hoTen} <span class="text-gray-500">(${profile.maNV || 'N/A'})</span></p>
+                                <p class="text-xs text-gray-500">${profile.donVi}</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${statusBadgeClass}">${ketNapStatus}</span>
+                    </label>
+                `;
+            }).join('');
+
+            document.getElementById('bulkAdmissionProfileList').innerHTML = profileListHTML.length > 0 
+                ? profileListHTML 
+                : '<p class="p-3 text-center text-gray-500">Không có hồ sơ nào.</p>';
+
+            // Reset count
+            document.getElementById('bulkAdmissionSelectedCount').textContent = '0';
+
+            openModal('modalBulkAdmission');
+        };
+
+        window.updateBulkAdmissionCounts = () => {
+            const count = document.querySelectorAll('.bulk-admission-checkbox:checked').length;
+            document.getElementById('bulkAdmissionSelectedCount').textContent = count;
+        };
+
+        window.handleBulkAdmission = (event) => {
+            event.preventDefault();
+            
+            const selectedProfileIds = Array.from(document.querySelectorAll('.bulk-admission-checkbox:checked'))
+                .map(cb => parseInt(cb.dataset.bulkAdmissionId));
+            
+            const newStatus = document.querySelector('input[name="bulkAdmissionStatus"]:checked')?.value;
+
+            if (selectedProfileIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một hồ sơ.');
+                return;
+            }
+
+            if (!newStatus) {
+                alert('Vui lòng chọn trạng thái kết nạp.');
+                return;
+            }
+
+            // Xác nhận nếu chọn "Hoàn thành"
+            if (newStatus === 'Hoàn thành') {
+                const confirmMsg = `Bạn đang cập nhật ${selectedProfileIds.length} hồ sơ sang trạng thái "Hoàn thành".\n\n` +
+                    `Hệ thống sẽ tự động tạo ${selectedProfileIds.length} bản ghi tại Phân hệ Đảng viên với chức danh "Đảng viên dự bị".\n\n` +
+                    `Bạn có chắc chắn muốn tiếp tục?`;
+                
+                if (!confirm(confirmMsg)) {
+                    return;
+                }
+            }
+
+            // Cập nhật hàng loạt
+            let completedCount = 0;
+            selectedProfileIds.forEach(profileId => {
+                const profile = mockData.find(d => d.id === profileId);
+                if (profile) {
+                    const oldStatus = profile.ketNapStatus;
+                    profile.ketNapStatus = newStatus;
+
+                    if (newStatus === 'Hoàn thành') {
+                        const now = new Date();
+                        profile.ketNapCompletedDate = now.toISOString().substring(0, 10);
+                        
+                        updateRecordProgress(profileId, STEPS.KET_NAP, 'Hoàn thành', `Hoàn thành Quyết định kết nạp. Chuyển sang Đảng viên dự bị.`);
+                        createPartyMemberRecord(profile);
+                        completedCount++;
+                    } else if (newStatus === 'Không hoàn thành') {
+                        updateRecordProgress(profileId, STEPS.KET_NAP, 'Không hoàn thành', `Kết nạp không hoàn thành.`);
+                    } else {
+                        updateRecordProgress(profileId, STEPS.KET_NAP, 'Đang thực hiện', `Đang xử lý quyết định kết nạp.`);
+                    }
+                }
+            });
+
+            closeModal('modalBulkAdmission');
+            renderAdmissionDecisionTable();
+            renderQCTable();
+
+            if (completedCount > 0) {
+                alert(`✅ Đã hoàn thành kết nạp cho ${completedCount} hồ sơ.\n\n📋 ${completedCount} hồ sơ đã được tạo tự động tại Phân hệ Đảng viên với chức danh "Đảng viên dự bị".`);
+            } else {
+                alert(`Đã cập nhật trạng thái cho ${selectedProfileIds.length} hồ sơ thành công!`);
+            }
+        };
+
+        // --- LOGIC FOR TAB: Rèn Luyện Thử Thách (RLTT) ---
+
+        const renderMentorTable = () => {
+            const assignedMentors = mockMentors.filter(m => m.isAssigned);
+            
+            const rows = assignedMentors.map(mentor => {
+                const studentCount = mockData.filter(d => d.mentorId === mentor.id).length;
+                
+                let actions = `
+                    <button onclick="event.stopPropagation(); openMentorDetailModal(${mentor.id});" class="text-indigo-600 hover:text-indigo-800 mr-2" title="Xem Chi tiết & Gán hồ sơ"><i class="fas fa-eye"></i></button>
+                    <button onclick="event.stopPropagation(); removeMentor(${mentor.id});" class="text-red-600 hover:text-red-800" title="Xóa Người Hướng Dẫn"><i class="fas fa-user-times"></i></button>
+                `;
+
+                return `
+                    <tr class="hover:bg-gray-50 cursor-pointer" onclick="openMentorDetailModal(${mentor.id})">
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap font-medium">${mentor.hoTen}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${mentor.maDV}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${mentor.chucDanh}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${mentor.boPhan}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-center font-bold text-primary-red">${studentCount}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Danh sách Người Hướng Dẫn Rèn Luyện</h2>
+                    <button onclick="openAddMentorModal()" class="bg-primary-red text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition shadow-md">
+                        <i class="fas fa-plus mr-2"></i> Thêm Người Hướng Dẫn
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã Đảng viên</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                                <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Bộ phận</th>
+                                <th class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Số hồ sơ đang hướng dẫn</th>
+                                <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${rows.length > 0 ? rows : '<tr><td colspan="6" class="p-4 text-center text-gray-500">Chưa có người hướng dẫn nào được thêm.</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
+        window.openAddMentorModal = () => {
+            const availableMentors = mockMentors.filter(m => !m.isAssigned);
+            
+            const listHTML = availableMentors.map(mentor => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border">
+                    <div class="flex items-center">
+                        <input type="checkbox" data-id="${mentor.id}" onchange="updateSelectedMentorCount()" class="form-checkbox text-primary-red h-5 w-5 rounded mr-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">${mentor.hoTen} (${mentor.maDV})</p>
+                            <p class="text-xs text-gray-500">${mentor.chucDanh} - ${mentor.boPhan}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('availableMentorList').innerHTML = listHTML.length > 0 ? listHTML : '<p class="p-3 text-center text-gray-500">Không còn Đảng viên nào khả dụng để gán hướng dẫn.</p>';
+            document.getElementById('selectedMentorCount').textContent = '0';
+            openModal('modalAddMentor');
+        };
+
+        window.updateSelectedMentorCount = () => {
+            const count = document.querySelectorAll('#availableMentorList input[type="checkbox"]:checked').length;
+            document.getElementById('selectedMentorCount').textContent = count;
+        };
+
+        window.addSelectedMentors = () => {
+            const selectedIds = Array.from(document.querySelectorAll('#availableMentorList input[type="checkbox"]:checked'))
+                .map(checkbox => parseInt(checkbox.dataset.id));
+
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một Đồng chí.');
+                return;
+            }
+
+            selectedIds.forEach(id => {
+                const mentor = mockMentors.find(m => m.id === id);
+                if (mentor) {
+                    mentor.isAssigned = true; // Đánh dấu đã được gán vào danh sách quản lý
+                }
+            });
+
+            closeModal('modalAddMentor');
+            renderMentorTable(); 
+            alert(`Đã thêm ${selectedIds.length} Người Hướng Dẫn thành công!`);
+        };
+
+        window.removeMentor = (mentorId) => {
+            if (!confirm("Bạn có chắc chắn muốn loại bỏ Người Hướng Dẫn này? Tất cả hồ sơ đang hướng dẫn sẽ bị mất phân công.")) return;
+
+            const mentor = mockMentors.find(m => m.id === mentorId);
+            if (mentor) {
+                // Đánh dấu mentor không còn được quản lý
+                mentor.isAssigned = false; 
+
+                // Loại bỏ phân công khỏi tất cả học viên
+                mockData.forEach(d => {
+                    if (d.mentorId === mentorId) {
+                        d.mentorId = null;
+                        d.trainingStatus = null;
+                        d.trainingStartDate = null;
+                    }
+                });
+
+                renderMentorTable();
+            }
+        };
+
+        window.openMentorDetailModal = (mentorId) => {
+            const mentor = mockMentors.find(m => m.id === mentorId);
+            if (!mentor) return;
+            currentMentorId = mentorId;
+
+            const students = mockData.filter(d => d.mentorId === mentorId);
+
+            document.getElementById('detailMentorName').textContent = mentor.hoTen;
+            document.getElementById('detailMentorCode').textContent = mentor.maDV;
+            document.getElementById('detailMentorTitle').textContent = mentor.chucDanh;
+            document.getElementById('detailMentorDept').textContent = mentor.boPhan;
+            document.getElementById('detailMentorStudentCount').textContent = students.length;
+            document.getElementById('currentMentorStudentCount').textContent = students.length;
+
+            renderMentorStudentList(mentorId);
+            openModal('modalMentorDetail');
+        };
+
+        const renderMentorStudentList = (mentorId) => {
+            const studentsInTraining = mockData.filter(d => d.mentorId === mentorId);
+            const total = studentsInTraining.length;
+
+            document.getElementById('detailMentorStudentCount').textContent = total;
+            document.getElementById('currentMentorStudentCount').textContent = total;
+
+            const studentRows = studentsInTraining.map(student => {
+                let status = student.trainingStatus || "Đang rèn luyện";
+                let actions = '';
+                
+                // Nút cập nhật trạng thái
+                if (status === "Đang rèn luyện") {
+                    actions = `
+                        <button onclick="event.stopPropagation(); updateTrainingStatus(${student.id}, 'Hoàn thành');" class="text-green-600 hover:text-green-800 mr-2" title="Cập nhật Hoàn thành"><i class="fas fa-award"></i></button>
+                        <button onclick="event.stopPropagation(); updateTrainingStatus(${student.id}, 'Không hoàn thành');" class="text-yellow-600 hover:text-yellow-800 mr-2" title="Cập nhật Không hoàn thành"><i class="fas fa-times-circle"></i></button>
+                    `;
+                }
+                actions += `<button onclick="event.stopPropagation(); removeStudentFromMentor(${student.id});" class="text-red-600 hover:text-red-800" title="Xóa khỏi hướng dẫn"><i class="fas fa-user-times"></i></button>`;
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.hoTen}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.chucDanh || 'N/A'}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${student.donVi}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap">${new Date(student.trainingStartDate).toLocaleDateString('vi-VN')}</td>
+                        <td class="p-3 text-sm whitespace-nowrap">${getStatusBadge(status)}</td>
+                        <td class="p-3 text-sm text-gray-700 whitespace-nowrap text-right">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('mentorStudentList').innerHTML = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Chức danh</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Bộ phận</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày BĐ Rèn luyện</th>
+                            <th class="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái rèn luyện</th>
+                            <th class="px-3 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${studentRows.length > 0 ? studentRows : '<tr><td colspan="6" class="p-4 text-center text-gray-500">Chưa có hồ sơ nào đang được hướng dẫn.</td></tr>'}
+                    </tbody>
+                </table>
+            `;
+        };
+
+        window.openAssignStudentModal = () => {
+            // Chỉ lấy hồ sơ đã hoàn thành Lớp Nhận thức VÀ chưa có mentorId
+            const studentsForAssignment = mockData.filter(d => 
+                d.trangThai === STEPS.LOP_NHAN_THUC && 
+                d.classStatus === 'Hoàn thành' && 
+                d.mentorId === null
+            );
+            
+            const listHTML = studentsForAssignment.map(student => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border">
+                    <div class="flex items-center">
+                        <input type="checkbox" data-id="${student.id}" onchange="updateAssignSelectedCount()" class="form-checkbox text-primary-red h-5 w-5 rounded mr-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">${student.hoTen} (${student.maNV || 'N/A'})</p>
+                            <p class="text-xs text-gray-500">${student.donVi}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('assignableStudentsList').innerHTML = listHTML.length > 0 ? listHTML : '<p class="p-3 text-center text-gray-500">Không có hồ sơ nào đủ điều kiện gán hướng dẫn.</p>';
+            document.getElementById('assignSelectedCount').textContent = '0';
+            openModal('modalAssignStudents');
+        };
+
+        window.updateAssignSelectedCount = () => {
+            const count = document.querySelectorAll('#modalAssignStudents input[type="checkbox"]:checked').length;
+            document.getElementById('assignSelectedCount').textContent = count;
+        };
+
+        window.assignSelectedStudentsToMentor = () => {
+            const selectedIds = Array.from(document.querySelectorAll('#modalAssignStudents input[type="checkbox"]:checked'))
+                .map(checkbox => parseInt(checkbox.dataset.id));
+
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một hồ sơ để gán.');
+                return;
+            }
+
+            const mentor = mockMentors.find(m => m.id === currentMentorId);
+            if (!mentor) return;
+
+            const now = new Date().toISOString().substring(0, 10); // Format YYYY-MM-DD for consistency
+
+            selectedIds.forEach(id => {
+                const record = mockData.find(d => d.id === id);
+                if (record) {
+                    // 1. Gán vào Mentor
+                    record.mentorId = currentMentorId;
+                    record.trainingStatus = 'Đang rèn luyện';
+                    record.trainingStartDate = now;
+                    
+                    // 2. Cập nhật trạng thái tiến trình (Bước: Rèn luyện thử thách)
+                    updateRecordProgress(id, STEPS.REN_LUYEN, 'Đang thực hiện', `Bắt đầu rèn luyện với Đ/c ${mentor.hoTen}.`);
+                }
+            });
+
+            closeModal('modalAssignStudents');
+            renderMentorStudentList(currentMentorId); // Cập nhật danh sách hồ sơ trong chi tiết mentor
+            renderMentorTable(); // Cập nhật bảng Mentor
+            renderQCTable(); // Cập nhật bảng QCƯT
+            alert(`Đã gán ${selectedIds.length} hồ sơ cho Đ/c ${mentor.hoTen} thành công!`);
+        };
+
+        window.updateTrainingStatus = (studentId, status) => {
+            const student = mockData.find(d => d.id === studentId);
+            if (!student) return;
+            
+            student.trainingStatus = status;
+
+            if (status === 'Hoàn thành') {
+                // Tự động chuyển sang bước Hoàn thiện Hồ sơ qua updateRecordProgress
+                updateRecordProgress(studentId, STEPS.REN_LUYEN, 'Hoàn thành', `Hoàn thành Rèn luyện thử thách. Chuyển sang Hoàn thiện hồ sơ.`);
+            } else {
+                 // Cập nhật timeline cho trạng thái khác (ví dụ: Không hoàn thành)
+                 updateRecordProgress(studentId, STEPS.REN_LUYEN, status, `Kết quả rèn luyện: ${status}.`);
+            }
+            
+            renderMentorStudentList(currentMentorId);
+            renderQCTable();
+        };
+
+        window.removeStudentFromMentor = (studentId) => {
+             if (!confirm("Bạn có chắc chắn muốn HỦY phân công hướng dẫn cho hồ sơ này?")) return;
+            const student = mockData.find(d => d.id === studentId);
+            if (student) {
+                const mentorId = student.mentorId;
+                student.mentorId = null;
+                student.trainingStatus = null;
+                student.trainingStartDate = null;
+
+                // Cập nhật lại trạng thái tiến trình (quay về Lớp Nhận thức - Hoàn thành)
+                updateRecordProgress(studentId, STEPS.LOP_NHAN_THUC, 'Hoàn thành', `Đã hủy phân công hướng dẫn. Hồ sơ sẵn sàng gán lại.`);
+
+                renderMentorStudentList(mentorId);
+                renderMentorTable();
+            }
+        };
+
+
+        // --- Main Navigation Logic ---
+
+        // Thiết lập tab mặc định là Quyết định kết nạp (theo yêu cầu mới)
+        const defaultTarget = 'lop-nhan-thuc';
+        
+        // Cập nhật nội dung chính
+        const updateContent = (target) => {
+            const stepElement = document.querySelector(`.nav-step[data-target="${target}"]`);
+            if (target === 'quan-chung') {
+                mainContent.innerHTML = renderQCTable();
+            } else if (target === 'lop-nhan-thuc') {
+                mainContent.innerHTML = renderClassTable();
+            } else if (target === 'ren-luyen') {
+                 mainContent.innerHTML = renderMentorTable();
+            } else if (target === 'hoan-thien') {
+                 mainContent.innerHTML = renderDocumentCompletionTable();
+            } else if (target === 'ket-nap') {
+                 mainContent.innerHTML = renderAdmissionDecisionTable();
+            }
+            else {
+                // Placeholder cho các màn hình khác
+                 mainContent.innerHTML = `
+                    <div class="p-8 bg-white border border-gray-200 rounded-lg text-center shadow-inner">
+                        <i class="fas fa-tools text-5xl text-gray-300 mb-4"></i>
+                        <h2 class="text-2xl font-semibold text-gray-700">Màn hình ${stepElement.getAttribute('data-title')}</h2>
+                        <p class="text-gray-500 mt-2 max-w-lg mx-auto">
+                            Chức năng này đang được triển khai. Khu vực này sẽ hiển thị bảng quản lý ${stepElement.getAttribute('data-title')}.
+                        </p>
+                    </div>
+                `;
+            }
+        };
+
+        // --- QCUT Modal functions (Continued) ---
+
+        document.getElementById('qcForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const id = document.getElementById('qcRecordId').value;
+            
+            // Helper: Lấy giá trị từ form
+            const getFormValue = (field) => formData.get(field) || '';
+            
+            if (id) {
+                // Edit existing record - Cập nhật tất cả 44 trường
+                const record = mockData.find(d => d.id === parseInt(id));
+                
+                // I. Thông tin cơ bản
+                record.hoTen = getFormValue('hoTen');
+                record.maNV = getFormValue('maNV');
+                record.donVi = getFormValue('donVi');
+                record.chiBoCha = getFormValue('chiBoCha');
+                record.chucDanh = getFormValue('chucDanh');
+                record.chucDanhChinhQuyen = getFormValue('chucDanhChinhQuyen');
+                record.chucDanhDoanThe = getFormValue('chucDanhDoanThe');
+                record.gioiTinh = getFormValue('gioiTinh');
+                record.ngaySinh = getFormValue('ngaySinh');
+                record.cccd = getFormValue('cccd');
+                record.danToc = getFormValue('danToc');
+                record.tonGiao = getFormValue('tonGiao');
+                record.ngayTiepNhan = getFormValue('ngayTiepNhan');
+                
+                // II. Địa chỉ
+                record.noiSinhTP = getFormValue('noiSinhTP');
+                record.noiSinhPhuong = getFormValue('noiSinhPhuong');
+                record.diaChiNoiSinh = getFormValue('diaChiNoiSinh');
+                record.queQuanTP = getFormValue('queQuanTP');
+                record.queQuanPhuong = getFormValue('queQuanPhuong');
+                record.diaChiQueQuan = getFormValue('diaChiQueQuan');
+                record.noiOHienNayTP = getFormValue('noiOHienNayTP');
+                record.noiOHienNayPhuong = getFormValue('noiOHienNayPhuong');
+                record.diaChiNoiOHienNay = getFormValue('diaChiNoiOHienNay');
+                record.thuongTruTP = getFormValue('thuongTruTP');
+                record.diaChiThuongTru = getFormValue('diaChiThuongTru');
+                record.thanhPhanGiaDinh = getFormValue('thanhPhanGiaDinh');
+                
+                // III. Công tác
+                record.ngheNghiepTruocTuyenDung = getFormValue('ngheNghiepTruocTuyenDung');
+                record.ngayTuyenDung = getFormValue('ngayTuyenDung');
+                record.donViTuyenDung = getFormValue('donViTuyenDung');
+                record.ngayVaoCoQuan = getFormValue('ngayVaoCoQuan');
+                record.boPhanCongTac = getFormValue('boPhanCongTac');
+                record.congTacChinhDangLam = getFormValue('congTacChinhDangLam');
+                record.ngachCongChuc = getFormValue('ngachCongChuc');
+                record.bacLuong = getFormValue('bacLuong');
+                record.heSo = getFormValue('heSo');
+                record.tuThang = getFormValue('tuThang');
+                record.soTruongCongTac = getFormValue('soTruongCongTac');
+                record.congViecLauNhat = getFormValue('congViecLauNhat');
+                record.dienThoai = getFormValue('dienThoai');
+                record.danhHieu = getFormValue('danhHieu');
+                
+                alert('✅ Đã cập nhật hồ sơ thành công!');
+            } else {
+                // Add new record - Lưu tất cả 44 trường
+                const newRecord = {
+                    id: mockData.length > 0 ? Math.max(...mockData.map(d => d.id)) + 1 : 1,
+                    
+                    // I. Thông tin cơ bản
+                    hoTen: getFormValue('hoTen'),
+                    maNV: getFormValue('maNV'),
+                    donVi: getFormValue('donVi'),
+                    chiBoCha: getFormValue('chiBoCha'),
+                    chucDanh: getFormValue('chucDanh'),
+                    chucDanhChinhQuyen: getFormValue('chucDanhChinhQuyen'),
+                    chucDanhDoanThe: getFormValue('chucDanhDoanThe'),
+                    gioiTinh: getFormValue('gioiTinh'),
+                    ngaySinh: getFormValue('ngaySinh'),
+                    cccd: getFormValue('cccd'),
+                    danToc: getFormValue('danToc'),
+                    tonGiao: getFormValue('tonGiao'),
+                    ngayTiepNhan: getFormValue('ngayTiepNhan'),
+                    
+                    // II. Địa chỉ
+                    noiSinhTP: getFormValue('noiSinhTP'),
+                    noiSinhPhuong: getFormValue('noiSinhPhuong'),
+                    diaChiNoiSinh: getFormValue('diaChiNoiSinh'),
+                    queQuanTP: getFormValue('queQuanTP'),
+                    queQuanPhuong: getFormValue('queQuanPhuong'),
+                    diaChiQueQuan: getFormValue('diaChiQueQuan'),
+                    noiOHienNayTP: getFormValue('noiOHienNayTP'),
+                    noiOHienNayPhuong: getFormValue('noiOHienNayPhuong'),
+                    diaChiNoiOHienNay: getFormValue('diaChiNoiOHienNay'),
+                    thuongTruTP: getFormValue('thuongTruTP'),
+                    diaChiThuongTru: getFormValue('diaChiThuongTru'),
+                    thanhPhanGiaDinh: getFormValue('thanhPhanGiaDinh'),
+                    
+                    // III. Công tác
+                    ngheNghiepTruocTuyenDung: getFormValue('ngheNghiepTruocTuyenDung'),
+                    ngayTuyenDung: getFormValue('ngayTuyenDung'),
+                    donViTuyenDung: getFormValue('donViTuyenDung'),
+                    ngayVaoCoQuan: getFormValue('ngayVaoCoQuan'),
+                    boPhanCongTac: getFormValue('boPhanCongTac'),
+                    congTacChinhDangLam: getFormValue('congTacChinhDangLam'),
+                    ngachCongChuc: getFormValue('ngachCongChuc'),
+                    bacLuong: getFormValue('bacLuong'),
+                    heSo: getFormValue('heSo'),
+                    tuThang: getFormValue('tuThang'),
+                    soTruongCongTac: getFormValue('soTruongCongTac'),
+                    congViecLauNhat: getFormValue('congViecLauNhat'),
+                    dienThoai: getFormValue('dienThoai'),
+                    danhHieu: getFormValue('danhHieu'),
+                    
+                    // Metadata hệ thống
+                    trangThai: STEPS.QUAN_CHUNG,
+                    currentStepIndex: 0,
+                    classId: null,
+                    classEntryDate: null,
+                    classStatus: null,
+                    mentorId: null,
+                    trainingStatus: null,
+                    trainingStartDate: null,
+                    documents: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
+                    ketNapStatus: null,
+                    ketNapCompletedDate: null,
+                    progress: [
+                        { step: STEPS.QUAN_CHUNG, status: "Đang thực hiện", start: new Date().toLocaleDateString('vi-VN'), end: "N/A", note: "Hồ sơ mới được tiếp nhận." },
+                        { step: STEPS.CAM_TINH, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                        { step: STEPS.LOP_NHAN_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                        { step: STEPS.REN_LUYEN, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                        { step: STEPS.HOAN_THIEN, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                        { step: STEPS.KET_NAP, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                        { step: STEPS.CHINH_THUC, status: "Chưa bắt đầu", start: "N/A", end: "N/A", note: "" },
+                    ]
+                };
+                mockData.push(newRecord);
+                
+                const fromHSNV = document.getElementById('fromHSNV').value === 'true';
+                if (fromHSNV) {
+                    alert(`✅ Đã thêm hồ sơ mới từ HSNV thành công!\n\n👤 ${newRecord.hoTen} (${newRecord.maNV})`);
+                } else {
+                    alert('✅ Đã thêm hồ sơ mới thành công!');
+                }
+            }
+            
+            closeModal('modalDataEntry');
+            document.getElementById('qcForm').reset();
+            
+            // Re-render UI
+            const activeTarget = document.querySelector('.nav-step.active')?.getAttribute('data-target');
+            if (activeTarget === 'quan-chung') {
+                renderQCTable();
+            }
+        });
+        
+        window.deleteRecord = (id) => {
+            if (confirm("Bạn có chắc chắn muốn xóa hồ sơ này?")) {
+                mockData = mockData.filter(d => d.id !== id);
+                renderQCTable();
+            }
+        };
+        
+        // --- Slide-in Detail Render (Updated with new STEPS) ---
+
+        const renderDetailField = (label, value) => `
+            <div>
+                <span class="text-gray-500 font-medium">${label}:</span>
+                <p class="text-gray-900 font-semibold">${value || 'N/A'}</p>
+            </div>
+        `;
+
+        const renderDetailTabs = (record) => {
+            // Tab 1: Thông tin Cá nhân (Hiển thị đầy đủ 44 trường)
+            const infoContent = document.getElementById('detailInfoContent');
+            const mentor = record.mentorId ? mockMentors.find(m => m.id === record.mentorId) : null;
+            
+            infoContent.innerHTML = `
+                <!-- I. THÔNG TIN CƠ BẢN -->
+                <div class="col-span-2 text-primary-red font-bold text-md border-b pb-2 mb-3">I. THÔNG TIN CƠ BẢN</div>
+                ${renderDetailField("1. Họ và tên", record.hoTen)}
+                ${renderDetailField("2. Mã nhân viên", record.maNV || "N/A")}
+                ${renderDetailField("3. Đơn vị / Chi bộ", record.donVi)}
+                ${renderDetailField("4. Đảng bộ/Chi bộ cha", record.chiBoCha || "N/A")}
+                ${renderDetailField("5. Chức danh", record.chucDanh)}
+                ${renderDetailField("8. Chức danh chính quyền", record.chucDanhChinhQuyen || "N/A")}
+                ${renderDetailField("9. Chức danh đoàn thể", record.chucDanhDoanThe || "N/A")}
+                ${renderDetailField("12. Giới tính", record.gioiTinh)}
+                ${renderDetailField("13. Ngày sinh", record.ngaySinh ? new Date(record.ngaySinh).toLocaleDateString('vi-VN') : "N/A")}
+                ${renderDetailField("15. CMND/CCCD", record.cccd)}
+                ${renderDetailField("16. Dân tộc", record.danToc || "N/A")}
+                ${renderDetailField("17. Tôn giáo", record.tonGiao || "N/A")}
+                ${renderDetailField("18. Ngày tiếp nhận", record.ngayTiepNhan ? new Date(record.ngayTiepNhan).toLocaleDateString('vi-VN') : "N/A")}
+                
+                <!-- II. THÔNG TIN ĐỊA CHỈ -->
+                <div class="col-span-2 text-primary-red font-bold text-md border-b pb-2 mb-3 mt-4">II. THÔNG TIN ĐỊA CHỈ</div>
+                ${renderDetailField("19. Nơi sinh (Tỉnh/TP)", record.noiSinhTP || "N/A")}
+                ${renderDetailField("20. Nơi sinh (Phường/Xã)", record.noiSinhPhuong || "N/A")}
+                ${renderDetailField("21. Địa chỉ nơi sinh", record.diaChiNoiSinh || "N/A")}
+                ${renderDetailField("22. Quê quán (Tỉnh/TP)", record.queQuanTP || "N/A")}
+                ${renderDetailField("23. Quê quán (Phường/Xã)", record.queQuanPhuong || "N/A")}
+                ${renderDetailField("24. Địa chỉ quê quán", record.diaChiQueQuan || "N/A")}
+                ${renderDetailField("25. Nơi ở hiện nay (Tỉnh/TP)", record.noiOHienNayTP || "N/A")}
+                ${renderDetailField("26. Nơi ở hiện nay (Phường/Xã)", record.noiOHienNayPhuong || "N/A")}
+                ${renderDetailField("27. Địa chỉ nơi ở hiện nay", record.diaChiNoiOHienNay || "N/A")}
+                ${renderDetailField("28. Tỉnh/TP thường trú", record.thuongTruTP || "N/A")}
+                ${renderDetailField("29. Địa chỉ thường trú", record.diaChiThuongTru || "N/A")}
+                ${renderDetailField("30. Thành phần gia đình", record.thanhPhanGiaDinh || "N/A")}
+                
+                <!-- III. THÔNG TIN CÔNG TÁC -->
+                <div class="col-span-2 text-primary-red font-bold text-md border-b pb-2 mb-3 mt-4">III. THÔNG TIN CÔNG TÁC</div>
+                ${renderDetailField("31. Nghề nghiệp trước khi tuyển dụng", record.ngheNghiepTruocTuyenDung || "N/A")}
+                ${renderDetailField("32. Ngày được tuyển dụng", record.ngayTuyenDung ? new Date(record.ngayTuyenDung).toLocaleDateString('vi-VN') : "N/A")}
+                ${renderDetailField("33. Đơn vị tuyển dụng", record.donViTuyenDung || "N/A")}
+                ${renderDetailField("34. Ngày vào cơ quan hiện tại", record.ngayVaoCoQuan ? new Date(record.ngayVaoCoQuan).toLocaleDateString('vi-VN') : "N/A")}
+                ${renderDetailField("35. Bộ phận công tác", record.boPhanCongTac || "N/A")}
+                ${renderDetailField("36. Công tác chính đang làm", record.congTacChinhDangLam || "N/A")}
+                ${renderDetailField("37. Ngạch công chức", record.ngachCongChuc || "N/A")}
+                ${renderDetailField("38. Bậc lương", record.bacLuong || "N/A")}
+                ${renderDetailField("39. Hệ số", record.heSo || "N/A")}
+                ${renderDetailField("40. Từ tháng", record.tuThang || "N/A")}
+                ${renderDetailField("41. Sở trường công tác", record.soTruongCongTac || "N/A")}
+                ${renderDetailField("42. Công việc đã làm lâu nhất", record.congViecLauNhat || "N/A")}
+                ${renderDetailField("43. Điện thoại", record.dienThoai || "N/A")}
+                ${renderDetailField("44. Danh hiệu phong tặng", record.danhHieu || "N/A")}
+                
+                <!-- IV. THÔNG TIN TIẾN TRÌNH -->
+                <div class="col-span-2 text-primary-red font-bold text-md border-b pb-2 mb-3 mt-4">IV. THÔNG TIN TIẾN TRÌNH</div>
+                ${renderDetailField("Người hướng dẫn", mentor ? `${mentor.hoTen} (${mentor.maDV})` : "Chưa phân công")}
+                ${renderDetailField("Trạng thái rèn luyện", record.trainingStatus ? getStatusBadge(record.trainingStatus) : "N/A")}
+            `;
+            
+            // Tab 2: Tiến độ 5 bước (Timeline)
+            const progressContent = document.getElementById('progressTimeline');
+            const progressSteps = record.progress || [];
+            
+            const timelineHTML = progressSteps.map(p => {
+                let colorClass = 'bg-gray-400';
+                let iconClass = 'fas fa-hourglass-start';
+                let borderColor = 'border-gray-200';
+
+                if (p.status.includes('Hoàn thành')) {
+                    colorClass = 'bg-green-500';
+                    iconClass = 'fas fa-check-circle';
+                    borderColor = 'border-green-500';
+                } else if (p.status.includes('Đang thực hiện') || p.status.includes('Đang học') || p.status.includes('Đang rèn luyện')) {
+                    colorClass = 'bg-yellow-500';
+                    iconClass = 'fas fa-running';
+                    borderColor = 'border-yellow-500';
+                }
+
+                return `
+                    <div class="flex">
+                        <div class="flex flex-col items-center mr-4">
+                            <div class="w-8 h-8 rounded-full ${colorClass} flex items-center justify-center text-white shadow-md">
+                                <i class="${iconClass} text-sm"></i>
+                            </div>
+                            <div class="h-full w-0.5 ${borderColor}"></div>
+                        </div>
+                        <div class="flex-1 pb-8">
+                            <h5 class="font-semibold text-gray-800">${p.step} <span class="text-xs font-normal ml-2 py-0.5 px-2 rounded-full text-white ${colorClass}">${p.status}</span></h5>
+                            <p class="text-xs text-gray-500 mt-1">Bắt đầu: ${p.start} - Kết thúc: ${p.end}</p>
+                            ${p.note ? `<p class="text-sm italic text-gray-600 mt-2 p-3 bg-gray-50 rounded-lg border">${p.note}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            progressContent.innerHTML = timelineHTML;
+
+            // Xử lý chuyển đổi tab
+            const tabButtons = slideInDetailView.querySelectorAll('.tab-button');
+            const tabContents = [document.getElementById('contentThongTin'), document.getElementById('contentTienDo')];
+            
+            tabButtons.forEach(button => {
+                button.onclick = (e) => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('border-primary-red', 'text-primary-red');
+                        btn.classList.add('border-transparent');
+                    });
+                    
+                    e.currentTarget.classList.add('border-primary-red', 'text-primary-red');
+
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(`content${e.currentTarget.dataset.tab.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('')}`).classList.remove('hidden');
+                };
+            });
+            // Đảm bảo Tab 1 (Thông tin) luôn active khi mở slide-in
+            document.getElementById('tabThongTin').click();
+        };
+
+        // Xử lý chuyển đổi Tab Navigation chính
+        navSteps.forEach(step => {
+            // Kiểm tra và đặt active cho tab mặc định
+            if (step.getAttribute('data-target') === defaultTarget) {
+                 step.classList.add('active', 'border-primary-red');
+                 step.querySelector('.step-icon').classList.remove('text-gray-500');
+                 step.querySelector('.step-icon').classList.add('text-white');
+                 updateContent(defaultTarget);
+            } else {
+                 step.classList.remove('active', 'border-primary-red');
+                 step.classList.add('border-transparent');
+                 step.querySelector('.step-icon').classList.remove('text-white');
+                 step.querySelector('.step-icon').classList.add('text-gray-500');
+            }
+
+            step.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                // 1. Xử lý Highlight Tab
+                navSteps.forEach(s => {
+                    s.classList.remove('active', 'border-primary-red');
+                    s.classList.add('border-transparent');
+                    s.querySelector('.step-icon').classList.remove('text-white');
+                    s.querySelector('.step-icon').classList.add('text-gray-500');
+                });
+                
+                this.classList.add('active', 'border-primary-red');
+                this.querySelector('.step-icon').classList.remove('text-gray-500');
+                this.querySelector('.step-icon').classList.add('text-white');
+
+                // 2. Cập nhật Nội dung
+                updateContent(this.getAttribute('data-target'));
+                console.log(`Đã chuyển sang màn: ${this.getAttribute('data-title')}`);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
